@@ -1,0 +1,314 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Aula de Digitação - Prof. Bruno Galvão</title>
+    <link rel="shortcut icon" href="imagem/logofv.png" type="image/x-icon">
+    <style>
+        /* --- ESTILOS PRINCIPAIS --- */
+        :root {
+            --cor-vermelha: #c0392b; 
+            --cor-branca: #ffffff;
+            --sombra: rgba(0,0,0,0.5);
+        }
+
+        body {
+            margin: 0;
+            font-family: 'Arial', sans-serif;
+            height: 100vh;
+            width: 100vw;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            overflow: hidden; 
+            
+            /* --- BACKGROUND (FUNDO) --- */
+            /* Link da imagem "Mulher Conectada" */
+            background: linear-gradient(rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.6)), 
+                        url('imagem/MC\ LOgo.jpeg');
+            
+            /* Estica a imagem para caber na tela toda sem cortar */
+            background-size: 100% 100%; 
+            background-position: center;
+            background-repeat: no-repeat;
+            
+            color: white;
+        }
+
+        /* --- CABEÇALHO --- */
+        header {
+            width: 100%;
+            background-color: var(--cor-vermelha);
+            padding: 10px 0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 4px solid var(--cor-branca);
+            box-shadow: 0 4px 10px var(--sombra);
+            position: relative;
+            z-index: 10;
+        }
+
+        /* Área da Logo */
+        .area-logo {
+            flex: 1;
+            padding-left: 30px;
+            display: flex;
+            align-items: center;
+        }
+
+        .caixa-logo {
+            width: 80px;  
+            height: 80px; 
+            background-color: white;
+            border-radius: 50%; /* Deixa a logo redonda */
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden; 
+            border: 3px solid white;
+            box-shadow: 0 0 10px rgba(0,0,0,0.3);
+        }
+
+        .caixa-logo img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover; 
+        }
+
+        /* Área do Título */
+        .area-titulo {
+            flex: 2;
+            text-align: center;
+        }
+
+        .area-titulo h1 {
+            margin: 0;
+            font-size: 1.5rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            text-shadow: 1px 1px 3px rgba(0,0,0,0.5);
+        }
+
+        .area-titulo p {
+            margin: 0;
+            font-size: 0.9rem;
+            opacity: 0.9;
+        }
+
+        /* Área do Timer */
+        .area-timer {
+            flex: 1;
+            padding-right: 30px;
+            text-align: right;
+        }
+
+        #relogio {
+            font-size: 1.8rem;
+            font-weight: bold;
+            font-family: monospace;
+            background: rgba(0,0,0,0.3);
+            padding: 5px 15px;
+            border-radius: 8px;
+            border: 1px solid rgba(255,255,255,0.2);
+        }
+
+        /* --- ÁREA DO JOGO --- */
+        .container-jogo {
+            margin-top: 50px; 
+            background: rgba(255, 255, 255, 0.95);
+            padding: 40px;
+            border-radius: 20px;
+            width: 90%;
+            max-width: 600px;
+            text-align: center;
+            position: relative;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.6);
+        }
+
+        #palavra {
+            color: var(--cor-vermelha);
+            font-size: 3.5rem;
+            font-weight: 900;
+            margin-bottom: 20px;
+            text-transform: lowercase; /* Força letra minúscula visualmente */
+        }
+
+        input {
+            width: 100%;
+            box-sizing: border-box; 
+            padding: 15px;
+            font-size: 1.8rem;
+            border: 2px solid #ccc;
+            border-radius: 10px;
+            text-align: center;
+            outline: none;
+            color: #333;
+            transition: 0.3s;
+        }
+
+        input:focus {
+            border-color: var(--cor-vermelha);
+            box-shadow: 0 0 10px rgba(192, 57, 43, 0.2);
+        }
+
+        .placar {
+            margin-top: 20px;
+            color: #555;
+            font-size: 1.2rem;
+            font-weight: bold;
+        }
+        
+        #pontos { color: var(--cor-vermelha); font-size: 1.5rem; }
+
+        /* Botões */
+        #btn-acao {
+            background-color: var(--cor-vermelha);
+            color: white;
+            border: none;
+            padding: 15px 40px;
+            font-size: 1.2rem;
+            font-weight: bold;
+            border-radius: 50px;
+            cursor: pointer;
+            margin-top: 20px;
+            transition: transform 0.2s;
+        }
+        #btn-acao:hover { transform: scale(1.05); }
+
+        .escondido { display: none; }
+        .acertou { border-color: #27ae60 !important; color: #27ae60 !important; }
+
+    </style>
+</head>
+<body>
+
+    <header>
+        <div class="area-logo">
+            <div class="caixa-logo">
+                <img src="imagem/logoleao.jpeg" alt="Logo">
+            </div>
+        </div>
+
+        <div class="area-titulo">
+            <h1>Prof. Bruno Galvão</h1>
+            <p></p>
+        </div>
+
+        <div class="area-timer">
+            <span id="relogio">05:00</span>
+        </div>
+    </header>
+
+    <div class="container-jogo">
+        
+        <div id="tela-inicial">
+            <h2 style="color: #333">Aula de Digitação</h2>
+            <p style="color: #666">Sua missão: digitar o máximo de palavras.</p>
+            <button id="btn-acao" onclick="iniciarJogo()">COMEÇAR (5 min)</button>
+        </div>
+
+        <div id="tela-jogo" class="escondido">
+            <div id="palavra">...</div>
+            <input type="text" id="input-texto" placeholder="Digite aqui..." autocomplete="off">
+            
+            <div class="placar">
+                Acertos: <span id="pontos">0</span>
+            </div>
+        </div>
+
+        <div id="tela-fim" class="escondido">
+            <h2 style="color: var(--cor-vermelha)">FIM DO TEMPO!</h2>
+            <h1 style="color: #333; font-size: 3rem; margin: 0;"><span id="pontos-finais">0</span></h1>
+            <p style="color: #555">Palavras digitadas corretamente</p>
+            <button id="btn-acao" onclick="location.reload()">TENTAR NOVAMENTE</button>
+        </div>
+
+    </div>
+
+    <script>
+        // TEMPO: 5 minutos (300 segundos)
+        const TEMPO_INICIAL = 300; 
+        
+        // LISTA MISTURADA: Muitas fáceis, poucas com acento
+        const listaPalavras = [
+            // --- PALAVRAS FÁCEIS (Sem acento) ---
+            'teclado', 'mouse', 'monitor', 'internet', 'wifi', 'cabo', 
+            'escola', 'aluna', 'professor', 'mesa', 'cadeira', 'sala',
+            'software', 'hardware', 'windows', 'linux', 'android', 'apple',
+            'gabinete', 'fonte', 'memoria', 'disco', 'pasta', 'arquivo',
+            'texto', 'imagem', 'foto', 'som', 'jogo', 'play',
+            'enter', 'shift', 'control', 'espaco', 'delete', 'home',
+            'nuvem', 'drive', 'email', 'site', 'link', 'blog', 'mulheres', 'conectadas',
+            
+            // --- PALAVRAS COM ACENTO (Para treino específico) ---
+            'informática', 'computação', // Treino de acento agudo e til
+            'lógica', 'código',          // Treino de acento agudo
+            'usuário', 'domínio',
+            'vídeo', 'áudio',
+            'página', 'número',
+            'você', 'até'                // Treino de circunflexo e agudo simples
+        ];
+
+        const telaInicial = document.getElementById('tela-inicial');
+        const telaJogo = document.getElementById('tela-jogo');
+        const telaFim = document.getElementById('tela-fim');
+        const elPalavra = document.getElementById('palavra');
+        const inputTexto = document.getElementById('input-texto');
+        const elPontos = document.getElementById('pontos');
+        const elPontosFinais = document.getElementById('pontos-finais');
+        const elRelogio = document.getElementById('relogio');
+
+        let tempo = TEMPO_INICIAL;
+        let pontos = 0;
+        let intervalo;
+
+        function iniciarJogo() {
+            telaInicial.classList.add('escondido');
+            telaJogo.classList.remove('escondido');
+            inputTexto.value = '';
+            inputTexto.focus();
+            novaPalavra();
+            intervalo = setInterval(contarTempo, 1000);
+        }
+
+        function novaPalavra() {
+            const sorteada = listaPalavras[Math.floor(Math.random() * listaPalavras.length)];
+            elPalavra.innerText = sorteada;
+            inputTexto.classList.remove('acertou');
+        }
+
+        function contarTempo() {
+            tempo--;
+            let min = Math.floor(tempo / 60);
+            let sec = tempo % 60;
+            if (sec < 10) sec = "0" + sec;
+            elRelogio.innerText = min + ":" + sec;
+
+            if (tempo <= 0) fimDeJogo();
+        }
+
+        function fimDeJogo() {
+            clearInterval(intervalo);
+            telaJogo.classList.add('escondido');
+            telaFim.classList.remove('escondido');
+            elPontosFinais.innerText = pontos;
+        }
+
+        inputTexto.addEventListener('input', function() {
+            const digitado = inputTexto.value.trim().toLowerCase();
+            const palavraCerta = elPalavra.innerText.toLowerCase();
+
+            if (digitado === palavraCerta) {
+                pontos++;
+                elPontos.innerText = pontos;
+                inputTexto.classList.add('acertou');
+                inputTexto.value = '';
+                // Pequeno delay para troca da palavra
+                setTimeout(novaPalavra, 100);
+            }
+        });
+    </script>
+</body>
+</html>

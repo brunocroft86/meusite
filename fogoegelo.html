@@ -1,0 +1,492 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <title>Elemental Guardian: Lendas</title>
+    <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
+    <style>
+        body {
+            margin: 0;
+            overflow: hidden;
+            background-color: #050510;
+            font-family: 'Press Start 2P', cursive;
+            color: white;
+            user-select: none;
+        }
+
+        /* --- HUD (Interface de Jogo) --- */
+        #hud {
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 100%;
+            pointer-events: none;
+            padding: 20px;
+            box-sizing: border-box;
+        }
+
+        .hud-top-left { position: absolute; top: 20px; left: 20px; }
+        .hud-top-right { position: absolute; top: 20px; right: 20px; text-align: right; }
+        .hud-bottom-right { position: absolute; bottom: 30px; right: 30px; }
+        .hud-bottom-left { position: absolute; bottom: 20px; left: 20px; font-size: 10px; color: #666; line-height: 1.8; }
+
+        /* Barra de Vida */
+        .hp-container {
+            width: 200px; height: 20px;
+            background: #333; border: 2px solid #fff;
+            margin-bottom: 10px;
+        }
+        #hp-bar { width: 100%; height: 100%; background: #00ff00; transition: width 0.2s; }
+
+        /* Textos do HUD */
+        .score-text { font-size: 16px; color: #fff; margin-top: 5px; text-shadow: 2px 2px #000; }
+        .record-text { font-size: 12px; color: gold; margin-bottom: 5px; text-shadow: 1px 1px #000; }
+        
+        #element-indicator {
+            font-size: 24px; transition: color 0.2s; text-shadow: 2px 2px #000;
+        }
+
+        /* --- TELAS (Menu / Game Over) --- */
+        #overlay {
+            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.9);
+            display: flex; flex-direction: column; justify-content: center; align-items: center;
+            z-index: 20; backdrop-filter: blur(4px);
+        }
+
+        h1 {
+            font-size: 40px; color: #fff; text-align: center; line-height: 1.5;
+            text-shadow: 4px 4px #ff4500, -4px -4px #00bfff;
+            margin-bottom: 40px;
+        }
+
+        .input-group { margin-bottom: 20px; text-align: center; }
+        
+        input {
+            padding: 15px; font-family: 'Press Start 2P', cursive; font-size: 18px;
+            text-align: center; background: #222; border: 2px solid #555; color: #fff;
+            text-transform: uppercase; width: 300px;
+        }
+        input:focus { border-color: gold; outline: none; }
+
+        button {
+            padding: 15px 40px; font-family: 'Press Start 2P', cursive; font-size: 20px;
+            background: gold; color: #000; border: none; cursor: pointer;
+            box-shadow: 0 5px 0 #b8860b; transition: transform 0.1s;
+        }
+        button:active { transform: translateY(5px); box-shadow: 0 0 0; }
+
+        .champion-box {
+            margin-top: 40px; padding: 20px;
+            border: 2px dashed #444; border-radius: 10px;
+            text-align: center; color: #888;
+        }
+        .champion-name { color: gold; font-size: 18px; margin-top: 10px; display: block; }
+
+        .hidden { display: none !important; }
+    </style>
+</head>
+<body>
+
+<div id="hud" class="hidden">
+    <div class="hud-top-left">
+        <div class="hp-container"><div id="hp-bar"></div></div>
+        <div class="score-text">PONTOS: <span id="current-score">0</span></div>
+    </div>
+
+    <div class="hud-top-right">
+        <div class="record-text">RECORDE: <span id="ingame-record">0</span></div>
+        <div class="record-text" style="font-size: 10px; color: #aaa;">Lenda: <span id="ingame-record-name">---</span></div>
+    </div>
+
+    <div class="hud-bottom-right">
+        <div id="element-indicator">FOGO</div>
+    </div>
+
+    <div class="hud-bottom-left">
+        WASD: Mover | SHIFT: Dash<br>
+        MOUSE: Atirar | ESPAÇO: Trocar
+    </div>
+</div>
+
+<div id="overlay">
+    <h1 id="game-title">ELEMENTAL<br>GUARDIAN</h1>
+
+    <div id="menu-screen">
+        <div class="input-group">
+            <p style="margin-bottom: 10px; font-size: 12px; color: #aaa;">IDENTIFIQUE-SE, GUERREIRO:</p>
+            <input type="text" id="player-name" placeholder="SEU NOME" maxlength="10" autocomplete="off">
+        </div>
+        <button id="start-btn">JOGAR</button>
+
+        <div class="champion-box">
+            <span>🏆 MAIOR CAMPEÃO 🏆</span>
+            <span class="champion-name" id="menu-high-score">0000 - NINGUÉM</span>
+        </div>
+    </div>
+
+    <div id="game-over-screen" class="hidden" style="text-align: center;">
+        <p style="color: #ff4444; font-size: 24px; margin-bottom: 20px;">FIM DE JOGO</p>
+        
+        <p style="margin-bottom: 10px;">SUA PONTUAÇÃO:</p>
+        <p style="font-size: 30px; color: white; margin-bottom: 30px;" id="final-score">0</p>
+        
+        <p id="new-record-msg" style="color: gold; display: none; margin-bottom: 30px; animation: blink 1s infinite;">
+            ★ NOVO RECORDE REGISTRADO! ★
+        </p>
+
+        <button id="restart-btn">TENTAR DE NOVO</button>
+    </div>
+</div>
+
+<canvas id="gameCanvas"></canvas>
+
+<script>
+/**
+ * SISTEMA CENTRAL DO JOGO
+ */
+const canvas = document.getElementById('gameCanvas');
+const ctx = canvas.getContext('2d');
+
+// Elementos da Interface
+const ui = {
+    hud: document.getElementById('hud'),
+    overlay: document.getElementById('overlay'),
+    menuScreen: document.getElementById('menu-screen'),
+    gameOverScreen: document.getElementById('game-over-screen'),
+    
+    // Inputs e Botões
+    inputName: document.getElementById('player-name'),
+    startBtn: document.getElementById('start-btn'),
+    restartBtn: document.getElementById('restart-btn'),
+
+    // Displays
+    hpBar: document.getElementById('hp-bar'),
+    currentScore: document.getElementById('current-score'),
+    ingameRecord: document.getElementById('ingame-record'),
+    ingameRecordName: document.getElementById('ingame-record-name'),
+    elementInd: document.getElementById('element-indicator'),
+    
+    // Displays de Recorde
+    menuHighScore: document.getElementById('menu-high-score'),
+    finalScore: document.getElementById('final-score'),
+    newRecordMsg: document.getElementById('new-record-msg')
+};
+
+// Ajuste de Tela
+function resize() { canvas.width = window.innerWidth; canvas.height = window.innerHeight; }
+window.addEventListener('resize', resize);
+resize();
+
+// --- SISTEMA DE SALVAMENTO (LOCAL STORAGE) ---
+const SaveSystem = {
+    key: 'elemental_guardian_legend_v1',
+    get() {
+        const data = localStorage.getItem(this.key);
+        return data ? JSON.parse(data) : { name: 'CPU', score: 0 };
+    },
+    save(name, score) {
+        const current = this.get();
+        if (score > current.score) {
+            localStorage.setItem(this.key, JSON.stringify({ name, score }));
+            return true; // Retorna true se foi recorde
+        }
+        return false;
+    }
+};
+
+// Atualiza visualmente os recordes na tela
+function updateRecordDisplays() {
+    const record = SaveSystem.get();
+    // No Menu
+    ui.menuHighScore.innerText = `${record.score} - ${record.name}`;
+    // No HUD (durante o jogo)
+    ui.ingameRecord.innerText = record.score;
+    ui.ingameRecordName.innerText = record.name;
+}
+
+// --- ÁUDIO (SINTETIZADOR) ---
+const AudioSys = {
+    ctx: null,
+    init() { if(!this.ctx) this.ctx = new (window.AudioContext || window.webkitAudioContext)(); },
+    play(type, freq, dur, vol=0.1) {
+        if(!this.ctx) return;
+        const osc = this.ctx.createOscillator();
+        const gain = this.ctx.createGain();
+        osc.type = type; osc.frequency.setValueAtTime(freq, this.ctx.currentTime);
+        gain.gain.setValueAtTime(vol, this.ctx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.01, this.ctx.currentTime + dur);
+        osc.connect(gain); gain.connect(this.ctx.destination);
+        osc.start(); osc.stop(this.ctx.currentTime + dur);
+    },
+    sfx: {
+        shoot: () => AudioSys.play('square', 200, 0.1, 0.05),
+        hit: () => AudioSys.play('sawtooth', 100, 0.2, 0.1),
+        switch: () => AudioSys.play('sine', 600, 0.1, 0.1),
+        win: () => {
+            setTimeout(()=>AudioSys.play('square', 400, 0.2, 0.2), 0);
+            setTimeout(()=>AudioSys.play('square', 600, 0.4, 0.2), 200);
+        }
+    }
+};
+
+// --- VARIÁVEIS DE JOGO ---
+let game = { running: false, score: 0, wave: 1, playerName: 'JOGADOR' };
+let player;
+let entities = { enemies: [], projectiles: [], particles: [] };
+let input = { keys: {w:false,a:false,s:false,d:false,shift:false}, mouse: {x:0,y:0} };
+let spawnTimer;
+
+// --- CLASSES ---
+class Player {
+    constructor() {
+        this.x = canvas.width/2; this.y = canvas.height/2;
+        this.radius = 15; this.hp = 100; this.maxHp = 100;
+        this.element = 'FIRE'; this.color = '#ff4500';
+        this.speed = 4; this.dashCd = 0;
+    }
+    update() {
+        // Dash
+        if(this.dashCd > 0) this.dashCd--;
+        let currentSpeed = this.speed;
+        
+        if(input.keys.shift && this.dashCd <= 0) {
+            this.dashCd = 60; // Cooldown
+            // Impulso simples (simulado pela velocidade no frame atual)
+            currentSpeed = 15; 
+            // Partículas de dash
+            createExplosion(this.x, this.y, this.color, 3);
+        } else if (this.dashCd > 50) {
+            currentSpeed = 10; // Mantém velocidade alta por alguns frames
+        }
+
+        if(input.keys.w && this.y > this.radius) this.y -= currentSpeed;
+        if(input.keys.s && this.y < canvas.height - this.radius) this.y += currentSpeed;
+        if(input.keys.a && this.x > this.radius) this.x -= currentSpeed;
+        if(input.keys.d && this.x < canvas.width - this.radius) this.x += currentSpeed;
+
+        // UI HP
+        ui.hpBar.style.width = (this.hp / this.maxHp * 100) + '%';
+        if(this.hp <= 30) ui.hpBar.style.backgroundColor = 'red';
+        else ui.hpBar.style.backgroundColor = '#00ff00';
+    }
+    draw() {
+        ctx.beginPath(); ctx.arc(this.x, this.y, this.radius, 0, Math.PI*2);
+        ctx.fillStyle = this.color; 
+        ctx.shadowBlur = 20; ctx.shadowColor = this.color;
+        ctx.fill(); ctx.shadowBlur = 0;
+        
+        // Mira
+        ctx.beginPath(); ctx.moveTo(this.x, this.y); ctx.lineTo(input.mouse.x, input.mouse.y);
+        ctx.strokeStyle = this.color; ctx.globalAlpha = 0.3; ctx.setLineDash([5,5]); ctx.stroke();
+        ctx.globalAlpha = 1; ctx.setLineDash([]);
+    }
+    switch() {
+        this.element = this.element === 'FIRE' ? 'ICE' : 'FIRE';
+        this.color = this.element === 'FIRE' ? '#ff4500' : '#00bfff';
+        ui.elementInd.innerText = this.element === 'FIRE' ? 'FOGO' : 'GELO';
+        ui.elementInd.style.color = this.color;
+        AudioSys.sfx.switch();
+    }
+}
+
+class Enemy {
+    constructor(x, y, type) {
+        this.x = x; this.y = y; this.type = type;
+        this.radius = 18;
+        this.color = type === 'FIRE' ? '#ff3300' : '#00ccff';
+        this.speed = Math.random() * (1 + (game.wave * 0.2)) + 1;
+    }
+    update() {
+        const angle = Math.atan2(player.y - this.y, player.x - this.x);
+        this.x += Math.cos(angle) * this.speed;
+        this.y += Math.sin(angle) * this.speed;
+    }
+    draw() {
+        ctx.save(); ctx.translate(this.x, this.y);
+        ctx.fillStyle = this.color; ctx.beginPath();
+        if(this.type === 'FIRE') { // Triangulo
+            ctx.moveTo(0, -18); ctx.lineTo(18, 18); ctx.lineTo(-18, 18);
+        } else { // Quadrado
+            ctx.fillRect(-15, -15, 30, 30);
+        }
+        ctx.fill(); ctx.strokeStyle = 'white'; ctx.lineWidth = 2; ctx.stroke();
+        ctx.restore();
+    }
+}
+
+class Projectile {
+    constructor(x, y, angle, type, color) {
+        this.x = x; this.y = y; this.type = type; this.color = color;
+        this.vx = Math.cos(angle) * 12; this.vy = Math.sin(angle) * 12;
+        this.life = 100;
+    }
+    update() { this.x += this.vx; this.y += this.vy; this.life--; }
+    draw() { ctx.beginPath(); ctx.arc(this.x, this.y, 6, 0, Math.PI*2); ctx.fillStyle = this.color; ctx.fill(); }
+}
+
+// --- FUNÇÕES AUXILIARES ---
+function createExplosion(x, y, color, count=8) {
+    for(let i=0; i<count; i++) {
+        entities.particles.push({
+            x, y, color, 
+            vx: (Math.random()-0.5)*10, vy: (Math.random()-0.5)*10, 
+            life: 1.0 
+        });
+    }
+}
+
+function spawnEnemies() {
+    clearInterval(spawnTimer);
+    const interval = Math.max(400, 1200 - (game.wave * 100)); // Fica mais rápido
+    spawnTimer = setInterval(() => {
+        if(!game.running) return;
+        const radius = 30;
+        let x, y;
+        if(Math.random()<0.5) { x = Math.random()<0.5 ? -radius : canvas.width+radius; y = Math.random()*canvas.height; }
+        else { x = Math.random()*canvas.width; y = Math.random()<0.5 ? -radius : canvas.height+radius; }
+        entities.enemies.push(new Enemy(x, y, Math.random()<0.5?'FIRE':'ICE'));
+    }, interval);
+}
+
+// --- LOOP PRINCIPAL ---
+function gameLoop() {
+    if(!game.running) return;
+    requestAnimationFrame(gameLoop);
+    
+    // Fundo
+    ctx.fillStyle = '#050510'; ctx.fillRect(0,0,canvas.width,canvas.height);
+    
+    // Player
+    player.update(); player.draw();
+    
+    // Partículas
+    entities.particles.forEach((p, i) => {
+        p.x += p.vx; p.y += p.vy; p.vx *= 0.9; p.vy *= 0.9; p.life -= 0.05;
+        ctx.globalAlpha = p.life; ctx.fillStyle = p.color; 
+        ctx.beginPath(); ctx.arc(p.x, p.y, 3, 0, Math.PI*2); ctx.fill(); ctx.globalAlpha = 1;
+        if(p.life <= 0) entities.particles.splice(i, 1);
+    });
+
+    // Projéteis
+    entities.projectiles.forEach((p, i) => {
+        p.update(); p.draw();
+        if(p.life<=0) entities.projectiles.splice(i, 1);
+    });
+
+    // Inimigos e Colisões
+    entities.enemies.forEach((e, i) => {
+        e.update(); e.draw();
+        
+        // Dano no Player
+        if(Math.hypot(player.x - e.x, player.y - e.y) < player.radius + e.radius) {
+            player.hp -= 10;
+            createExplosion(player.x, player.y, 'white');
+            entities.enemies.splice(i, 1);
+            AudioSys.sfx.hit();
+            if(player.hp <= 0) gameOver();
+        }
+
+        // Colisão Tiro Inimigo
+        entities.projectiles.forEach((p, pi) => {
+            if(Math.hypot(p.x - e.x, p.y - e.y) < e.radius + 6) {
+                // Lógica de Elementos
+                const effective = (p.type === 'FIRE' && e.type === 'ICE') || (p.type === 'ICE' && e.type === 'FIRE');
+                
+                if(effective) {
+                    entities.enemies.splice(i, 1);
+                    entities.projectiles.splice(pi, 1);
+                    createExplosion(e.x, e.y, e.color);
+                    game.score += 100;
+                    ui.currentScore.innerText = game.score;
+                    AudioSys.sfx.hit();
+                    
+                    // Aumenta Dificuldade
+                    if(game.score % 1000 === 0) { game.wave++; spawnEnemies(); }
+                } else {
+                    entities.projectiles.splice(pi, 1);
+                    createExplosion(p.x, p.y, 'gray', 3); // Tiro falhou
+                }
+            }
+        });
+    });
+}
+
+// --- CONTROLES DE FLUXO ---
+function startGame() {
+    const nameVal = ui.inputName.value.trim();
+    if(!nameVal) { alert("Digite seu nome, herói!"); return; }
+    
+    game.playerName = nameVal.toUpperCase();
+    game.score = 0; game.wave = 1; game.running = true;
+    
+    player = new Player();
+    entities = { enemies: [], projectiles: [], particles: [] };
+    
+    ui.overlay.style.display = 'none';
+    ui.hud.classList.remove('hidden');
+    ui.menuScreen.classList.add('hidden');
+    ui.gameOverScreen.classList.add('hidden');
+    ui.currentScore.innerText = "0";
+    
+    AudioSys.init();
+    spawnEnemies();
+    gameLoop();
+}
+
+function gameOver() {
+    game.running = false;
+    clearInterval(spawnTimer);
+    
+    // Verifica Recorde
+    const isNewRecord = SaveSystem.save(game.playerName, game.score);
+    updateRecordDisplays();
+    
+    ui.hud.classList.add('hidden');
+    ui.overlay.style.display = 'flex';
+    ui.gameOverScreen.classList.remove('hidden');
+    
+    ui.finalScore.innerText = game.score;
+    
+    if(isNewRecord) {
+        ui.newRecordMsg.style.display = 'block';
+        AudioSys.sfx.win();
+    } else {
+        ui.newRecordMsg.style.display = 'none';
+    }
+}
+
+// --- INPUTS ---
+window.addEventListener('keydown', e => {
+    const k = e.key.toLowerCase();
+    if(k==='w') input.keys.w=true; if(k==='a') input.keys.a=true;
+    if(k==='s') input.keys.s=true; if(k==='d') input.keys.d=true;
+    if(e.key==='Shift') input.keys.shift=true;
+    if(e.code==='Space' && game.running) player.switch();
+});
+window.addEventListener('keyup', e => {
+    const k = e.key.toLowerCase();
+    if(k==='w') input.keys.w=false; if(k==='a') input.keys.a=false;
+    if(k==='s') input.keys.s=false; if(k==='d') input.keys.d=false;
+    if(e.key==='Shift') input.keys.shift=false;
+});
+window.addEventListener('mousemove', e => { input.mouse.x = e.clientX; input.mouse.y = e.clientY; });
+window.addEventListener('mousedown', () => {
+    if(game.running) {
+        const angle = Math.atan2(input.mouse.y - player.y, input.mouse.x - player.x);
+        entities.projectiles.push(new Projectile(player.x, player.y, angle, player.element, player.color));
+        AudioSys.sfx.shoot();
+    }
+});
+
+// Botões
+ui.startBtn.addEventListener('click', startGame);
+ui.restartBtn.addEventListener('click', () => {
+    ui.gameOverScreen.classList.add('hidden');
+    ui.menuScreen.classList.remove('hidden');
+});
+
+// Init
+updateRecordDisplays();
+
+</script>
+</body>
+</html>
