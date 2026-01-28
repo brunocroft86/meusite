@@ -147,7 +147,7 @@
             <button id="btn-acao" onclick="verificarDados()">COMEÇAR (10 min)</button>
 
             <div class="ranking-box">
-                <h3>🏆 Ranking Top 5</h3>
+                <h3>🏆 Ranking Top 3</h3>
                 <ul id="lista-ranking" class="lista-ranking">
                     <li style="text-align:center; color:#777;">Carregando...</li>
                 </ul>
@@ -234,20 +234,21 @@
             if (rankingSalvo) {
                 const ranking = JSON.parse(rankingSalvo);
                 
-                // Ordena e pega os top 5
+                // Ordena do maior para o menor
                 ranking.sort((a, b) => b.pontos - a.pontos);
-                const top5 = ranking.slice(0, 5);
+                
+                // --- MUDANÇA AQUI: PEGA APENAS OS 3 PRIMEIROS ---
+                const top3 = ranking.slice(0, 3);
 
-                if(top5.length === 0) {
+                if(top3.length === 0) {
                     listaRankingHTML.innerHTML = "<li style='text-align:center'>Sem recordes ainda. Seja a primeira!</li>";
                 } else {
-                    top5.forEach((item, index) => {
+                    top3.forEach((item, index) => {
                         let medalha = "";
                         if(index === 0) medalha = "🥇 ";
                         else if(index === 1) medalha = "🥈 ";
                         else if(index === 2) medalha = "🥉 ";
-                        else medalha = (index + 1) + ". ";
-
+                        
                         listaRankingHTML.innerHTML += `
                             <li>
                                 <span>${medalha}${item.nome} <span class="info-aluna">(${item.unidade})</span></span>

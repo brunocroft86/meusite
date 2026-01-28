@@ -2,26 +2,18 @@
 <html lang="pt-br">
 <head>
     <meta charset="UTF-8">
-    <title>Elemental Guardian: Lendas</title>
-    <link rel="shortcut icon" href="imagem/logofv.png" type="image/x-icon">
+    <title>Guardião Elemental: Torreta</title>
     <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
     <style>
         body {
-            margin: 0;
-            overflow: hidden;
-            background-color: #050510;
-            font-family: 'Press Start 2P', cursive;
-            color: white;
-            user-select: none;
+            margin: 0; overflow: hidden; background-color: #050510;
+            font-family: 'Press Start 2P', cursive; color: white; user-select: none;
         }
 
-        /* --- HUD (Interface de Jogo) --- */
+        /* --- HUD --- */
         #hud {
-            position: absolute;
-            top: 0; left: 0; width: 100%; height: 100%;
-            pointer-events: none;
-            padding: 20px;
-            box-sizing: border-box;
+            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+            pointer-events: none; padding: 20px; box-sizing: border-box;
         }
 
         .hud-top-left { position: absolute; top: 20px; left: 20px; }
@@ -29,58 +21,78 @@
         .hud-bottom-right { position: absolute; bottom: 30px; right: 30px; }
         .hud-bottom-left { position: absolute; bottom: 20px; left: 20px; font-size: 10px; color: #666; line-height: 1.8; }
 
-        /* Barra de Vida */
         .hp-container {
-            width: 200px; height: 20px;
-            background: #333; border: 2px solid #fff;
-            margin-bottom: 10px;
+            width: 200px; height: 20px; background: #333; border: 2px solid #fff; margin-bottom: 10px;
         }
         #hp-bar { width: 100%; height: 100%; background: #00ff00; transition: width 0.2s; }
 
-        /* Textos do HUD */
         .score-text { font-size: 16px; color: #fff; margin-top: 5px; text-shadow: 2px 2px #000; }
-        .record-text { font-size: 12px; color: gold; margin-bottom: 5px; text-shadow: 1px 1px #000; }
         
-        #element-indicator {
-            font-size: 24px; transition: color 0.2s; text-shadow: 2px 2px #000;
-        }
+        #combo-display { font-size: 20px; color: yellow; display: none; margin-top: 5px; animation: pulse 0.2s infinite; }
+        @keyframes pulse { 0% { transform: scale(1); } 50% { transform: scale(1.1); } 100% { transform: scale(1); } }
 
-        /* --- TELAS (Menu / Game Over) --- */
+        #element-indicator { font-size: 24px; transition: color 0.2s; text-shadow: 2px 2px #000; }
+
+        /* --- OVERLAYS (TUTORIAL & MENU) --- */
         #overlay {
             position: absolute; top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(0,0,0,0.9);
-            display: flex; flex-direction: column; justify-content: center; align-items: center;
-            z-index: 20; backdrop-filter: blur(4px);
+            background: rgba(0,0,0,0.95); display: flex; flex-direction: column;
+            justify-content: center; align-items: center; z-index: 20; backdrop-filter: blur(5px);
         }
 
         h1 {
             font-size: 40px; color: #fff; text-align: center; line-height: 1.5;
-            text-shadow: 4px 4px #ff4500, -4px -4px #00bfff;
-            margin-bottom: 40px;
+            text-shadow: 4px 4px #ff4500, -4px -4px #00bfff; margin-bottom: 30px;
         }
 
-        .input-group { margin-bottom: 20px; text-align: center; }
+        /* Estilo do Tutorial */
+        .tutorial-box {
+            background: rgba(20, 20, 30, 0.9);
+            border: 2px solid #555;
+            padding: 30px;
+            border-radius: 10px;
+            max-width: 600px;
+            text-align: center;
+            margin-bottom: 30px;
+            box-shadow: 0 0 20px rgba(0,0,0,0.5);
+        }
+
+        .tutorial-row {
+            display: flex; justify-content: space-around; align-items: center;
+            margin: 20px 0; font-size: 14px; color: #ccc;
+        }
         
+        .key-icon {
+            display: inline-block; padding: 10px; border: 2px solid #888; border-radius: 5px;
+            color: white; background: #333; font-size: 12px; margin-bottom: 5px;
+        }
+
+        .element-rule { font-size: 18px; margin: 10px 0; }
+
         input {
             padding: 15px; font-family: 'Press Start 2P', cursive; font-size: 18px;
             text-align: center; background: #222; border: 2px solid #555; color: #fff;
-            text-transform: uppercase; width: 300px;
+            text-transform: uppercase; width: 300px; margin-bottom: 20px;
         }
         input:focus { border-color: gold; outline: none; }
 
         button {
-            padding: 15px 40px; font-family: 'Press Start 2P', cursive; font-size: 20px;
+            padding: 15px 40px; font-family: 'Press Start 2P', cursive; font-size: 18px;
             background: gold; color: #000; border: none; cursor: pointer;
-            box-shadow: 0 5px 0 #b8860b; transition: transform 0.1s;
+            box-shadow: 0 5px 0 #b8860b; transition: transform 0.1s; margin-top: 20px;
         }
         button:active { transform: translateY(5px); box-shadow: 0 0 0; }
 
         .champion-box {
-            margin-top: 40px; padding: 20px;
-            border: 2px dashed #444; border-radius: 10px;
-            text-align: center; color: #888;
+            margin-top: 30px; padding: 15px; border: 2px dashed #444; border-radius: 10px;
+            text-align: center; color: #888; font-size: 12px;
         }
-        .champion-name { color: gold; font-size: 18px; margin-top: 10px; display: block; }
+        .champion-name { color: gold; font-size: 14px; margin-top: 10px; display: block; }
+        
+        .alert-msg { 
+            font-size: 24px; color: yellow; position: absolute; top: 30%; width: 100%; 
+            text-align: center; display: none; text-shadow: 2px 2px red; 
+        }
 
         .hidden { display: none !important; }
     </style>
@@ -91,32 +103,31 @@
     <div class="hud-top-left">
         <div class="hp-container"><div id="hp-bar"></div></div>
         <div class="score-text">PONTOS: <span id="current-score">0</span></div>
+        <div id="combo-display">COMBO x<span id="combo-val">0</span></div>
     </div>
 
     <div class="hud-top-right">
-        <div class="record-text">RECORDE: <span id="ingame-record">0</span></div>
-        <div class="record-text" style="font-size: 10px; color: #aaa;">Lenda: <span id="ingame-record-name">---</span></div>
+        <div style="font-size: 12px; color: gold;">RECORDE: <span id="ingame-record">0</span></div>
+        <div style="font-size: 10px; color: #aaa; margin-bottom: 10px;">LENDA: <span id="ingame-record-name">---</span></div>
+        <div class="score-text" style="color: cyan;">ONDA: <span id="wave-display">1</span></div>
     </div>
 
     <div class="hud-bottom-right">
         <div id="element-indicator">FOGO</div>
     </div>
-
-    <div class="hud-bottom-left">
-        WASD: Mover | SHIFT: Dash<br>
-        MOUSE ESQ: Atirar | MOUSE DIR: Trocar
-    </div>
+    
+    <div id="game-msg" class="alert-msg">MENSAGEM</div>
 </div>
 
 <div id="overlay">
-    <h1 id="game-title">ELEMENTAL<br>GUARDIÃO</h1>
+    <h1 id="game-title">GUARDIÃO<br>ELEMENTAL</h1>
 
     <div id="menu-screen">
-        <div class="input-group">
+        <div style="text-align:center; margin-bottom:20px;">
             <p style="margin-bottom: 10px; font-size: 12px; color: #aaa;">IDENTIFIQUE-SE, GUERREIRO:</p>
             <input type="text" id="player-name" placeholder="SEU NOME" maxlength="10" autocomplete="off">
         </div>
-        <button id="start-btn">JOGAR</button>
+        <button id="next-btn">PRÓXIMO</button>
 
         <div class="champion-box">
             <span>🏆 MAIOR CAMPEÃO 🏆</span>
@@ -124,26 +135,56 @@
         </div>
     </div>
 
-    <div id="game-over-screen" class="hidden" style="text-align: center;">
-        <p style="color: #ff4444; font-size: 24px; margin-bottom: 20px;">FIM DE JOGO</p>
-        
-        <p style="margin-bottom: 10px;">SUA PONTUAÇÃO:</p>
-        <p style="font-size: 30px; color: white; margin-bottom: 30px;" id="final-score">0</p>
-        
-        <p id="new-record-msg" style="color: gold; display: none; margin-bottom: 30px; animation: blink 1s infinite;">
-            ★ NOVO RECORDE REGISTRADO! ★
-        </p>
+    <div id="tutorial-screen" class="hidden">
+        <div class="tutorial-box">
+            <h2 style="color: gold; margin-bottom: 20px;">COMO JOGAR</h2>
+            
+            <div class="tutorial-row">
+                <div style="text-align: center;">
+                    <div class="key-icon">MOUSE ESQUERDO</div>
+                    <p>ATIRAR</p>
+                </div>
+                <div style="text-align: center;">
+                    <div class="key-icon">MOUSE DIREITO</div>
+                    <p>TROCAR ELEMENTO</p>
+                </div>
+            </div>
 
-        <button id="restart-btn">TENTAR DE NOVO</button>
+            <hr style="border-color: #444; margin: 20px 0;">
+
+            <p style="margin-bottom: 15px;">REGRA DE COMBATE:</p>
+            
+            <div class="element-rule">
+                <span style="color: #ff4500;">TIRO DE FOGO</span> 🔥 
+                <span style="font-size: 12px;">DESTRÓI</span> 
+                ❄️ <span style="color: #00bfff;">GELO</span>
+            </div>
+            
+            <div class="element-rule">
+                <span style="color: #00bfff;">TIRO DE GELO</span> ❄️ 
+                <span style="font-size: 12px;">DESTRÓI</span> 
+                🔥 <span style="color: #ff4500;">FOGO</span>
+            </div>
+
+            <p style="font-size: 10px; color: #888; margin-top: 20px;">
+                *TIROS DA MESMA COR NÃO CAUSAM DANO!
+            </p>
+        </div>
+        <button id="start-btn">ENTENDI, VAMOS LÁ!</button>
+    </div>
+
+    <div id="game-over-screen" class="hidden" style="text-align: center;">
+        <p style="color: #ff4444; font-size: 24px; margin-bottom: 20px;">POSTO DESTRUÍDO</p>
+        <p style="margin-bottom: 10px;">PONTOS:</p>
+        <p style="font-size: 30px; color: white; margin-bottom: 30px;" id="final-score">0</p>
+        <p id="new-record-msg" style="color: gold; display: none; margin-bottom: 30px; animation: blink 1s infinite;">★ NOVO RECORDE! ★</p>
+        <button id="restart-btn">TENTAR NOVAMENTE</button>
     </div>
 </div>
 
 <canvas id="gameCanvas"></canvas>
 
 <script>
-/**
- * SISTEMA CENTRAL DO JOGO
- */
 const canvas = document.getElementById('gameCanvas');
 const ctx = canvas.getContext('2d');
 
@@ -152,66 +193,58 @@ const ui = {
     hud: document.getElementById('hud'),
     overlay: document.getElementById('overlay'),
     menuScreen: document.getElementById('menu-screen'),
+    tutorialScreen: document.getElementById('tutorial-screen'), // NOVO
     gameOverScreen: document.getElementById('game-over-screen'),
-    
-    // Inputs e Botões
     inputName: document.getElementById('player-name'),
+    nextBtn: document.getElementById('next-btn'), // NOVO
     startBtn: document.getElementById('start-btn'),
     restartBtn: document.getElementById('restart-btn'),
-
-    // Displays
     hpBar: document.getElementById('hp-bar'),
     currentScore: document.getElementById('current-score'),
     ingameRecord: document.getElementById('ingame-record'),
     ingameRecordName: document.getElementById('ingame-record-name'),
     elementInd: document.getElementById('element-indicator'),
-    
-    // Displays de Recorde
     menuHighScore: document.getElementById('menu-high-score'),
     finalScore: document.getElementById('final-score'),
-    newRecordMsg: document.getElementById('new-record-msg')
+    newRecordMsg: document.getElementById('new-record-msg'),
+    waveDisplay: document.getElementById('wave-display'),
+    gameMsg: document.getElementById('game-msg'),
+    comboDisplay: document.getElementById('combo-display'),
+    comboVal: document.getElementById('combo-val')
 };
 
-// Ajuste de Tela
 function resize() { canvas.width = window.innerWidth; canvas.height = window.innerHeight; }
 window.addEventListener('resize', resize);
 resize();
 
-// --- SISTEMA DE SALVAMENTO (LOCAL STORAGE) ---
+// --- SISTEMA DE SALVAMENTO ---
 const SaveSystem = {
-    key: 'elemental_guardian_legend_v1',
-    get() {
-        const data = localStorage.getItem(this.key);
-        return data ? JSON.parse(data) : { name: 'CPU', score: 0 };
-    },
+    key: 'elemental_guardian_tutorial_v6',
+    get() { return JSON.parse(localStorage.getItem(this.key)) || { name: 'CPU', score: 0 }; },
     save(name, score) {
         const current = this.get();
         if (score > current.score) {
             localStorage.setItem(this.key, JSON.stringify({ name, score }));
-            return true; // Retorna true se foi recorde
+            return true;
         }
         return false;
     }
 };
 
-// Atualiza visualmente os recordes na tela
 function updateRecordDisplays() {
     const record = SaveSystem.get();
-    // No Menu
     ui.menuHighScore.innerText = `${record.score} - ${record.name}`;
-    // No HUD (durante o jogo)
     ui.ingameRecord.innerText = record.score;
     ui.ingameRecordName.innerText = record.name;
 }
 
-// --- ÁUDIO (SINTETIZADOR) ---
+// --- ÁUDIO ---
 const AudioSys = {
     ctx: null,
     init() { if(!this.ctx) this.ctx = new (window.AudioContext || window.webkitAudioContext)(); },
     play(type, freq, dur, vol=0.1) {
         if(!this.ctx) return;
-        const osc = this.ctx.createOscillator();
-        const gain = this.ctx.createGain();
+        const osc = this.ctx.createOscillator(); const gain = this.ctx.createGain();
         osc.type = type; osc.frequency.setValueAtTime(freq, this.ctx.currentTime);
         gain.gain.setValueAtTime(vol, this.ctx.currentTime);
         gain.gain.exponentialRampToValueAtTime(0.01, this.ctx.currentTime + dur);
@@ -219,66 +252,81 @@ const AudioSys = {
         osc.start(); osc.stop(this.ctx.currentTime + dur);
     },
     sfx: {
-        shoot: () => AudioSys.play('square', 200, 0.1, 0.05),
-        hit: () => AudioSys.play('sawtooth', 100, 0.2, 0.1),
+        shoot: () => AudioSys.play('square', 150, 0.1, 0.05),
+        hit: () => AudioSys.play('sawtooth', 80, 0.3, 0.1),
         switch: () => AudioSys.play('sine', 600, 0.1, 0.1),
-        win: () => {
-            setTimeout(()=>AudioSys.play('square', 400, 0.2, 0.2), 0);
-            setTimeout(()=>AudioSys.play('square', 600, 0.4, 0.2), 200);
-        }
+        powerup: () => { setTimeout(()=>AudioSys.play('sine',400,0.1,0.2),0); setTimeout(()=>AudioSys.play('sine',800,0.3,0.2),100); },
+        win: () => { setTimeout(()=>AudioSys.play('square',400,0.2,0.2),0); setTimeout(()=>AudioSys.play('square',600,0.4,0.2),200); }
     }
 };
 
-// --- VARIÁVEIS DE JOGO ---
-let game = { running: false, score: 0, wave: 1, playerName: 'JOGADOR' };
+// --- VARIÁVEIS GLOBAIS ---
+let game = { running: false, score: 0, wave: 1, playerName: 'JOGADOR', combo: 0 };
 let player;
-let entities = { enemies: [], projectiles: [], particles: [] };
-let input = { keys: {w:false,a:false,s:false,d:false,shift:false}, mouse: {x:0,y:0} };
+let entities = { enemies: [], projectiles: [], particles: [], stars: [], powerups: [] };
+let input = { mouse: {x:0,y:0} };
 let spawnTimer;
 
 // --- CLASSES ---
-class Player {
+class Star {
     constructor() {
-        this.x = canvas.width/2; this.y = canvas.height/2;
-        this.radius = 15; this.hp = 100; this.maxHp = 100;
-        this.element = 'FIRE'; this.color = '#ff4500';
-        this.speed = 4; this.dashCd = 0;
+        this.x = Math.random() * canvas.width;
+        this.y = Math.random() * canvas.height;
+        this.size = Math.random() * 2;
+        this.speed = Math.random() * 3 + 0.5;
+        this.alpha = Math.random();
     }
     update() {
-        // Dash
-        if(this.dashCd > 0) this.dashCd--;
-        let currentSpeed = this.speed;
-        
-        if(input.keys.shift && this.dashCd <= 0) {
-            this.dashCd = 60; // Cooldown
-            // Impulso simples (simulado pela velocidade no frame atual)
-            currentSpeed = 15; 
-            // Partículas de dash
-            createExplosion(this.x, this.y, this.color, 3);
-        } else if (this.dashCd > 50) {
-            currentSpeed = 10; // Mantém velocidade alta por alguns frames
-        }
-
-        if(input.keys.w && this.y > this.radius) this.y -= currentSpeed;
-        if(input.keys.s && this.y < canvas.height - this.radius) this.y += currentSpeed;
-        if(input.keys.a && this.x > this.radius) this.x -= currentSpeed;
-        if(input.keys.d && this.x < canvas.width - this.radius) this.x += currentSpeed;
-
-        // UI HP
-        ui.hpBar.style.width = (this.hp / this.maxHp * 100) + '%';
-        if(this.hp <= 30) ui.hpBar.style.backgroundColor = 'red';
-        else ui.hpBar.style.backgroundColor = '#00ff00';
+        this.y += this.speed + (game.wave * 0.5);
+        if(this.y > canvas.height) { this.y = 0; this.x = Math.random() * canvas.width; }
     }
     draw() {
+        ctx.fillStyle = `rgba(255, 255, 255, ${this.alpha})`;
+        ctx.beginPath(); ctx.arc(this.x, this.y, this.size, 0, Math.PI*2); ctx.fill();
+    }
+}
+
+class PowerUp {
+    constructor(x, y) {
+        this.x = x; this.y = y; this.radius = 15;
+        this.type = Math.random() < 0.6 ? 'HEAL' : 'TRIPLE';
+        this.color = this.type === 'HEAL' ? '#00ff00' : '#ffff00';
+        const angle = Math.atan2(player.y - this.y, player.x - this.x);
+        this.vx = Math.cos(angle) * 1;
+        this.vy = Math.sin(angle) * 1;
+    }
+    update() { this.x += this.vx; this.y += this.vy; }
+    draw() {
+        ctx.beginPath(); ctx.arc(this.x, this.y, this.radius, 0, Math.PI*2);
+        ctx.fillStyle = this.color; ctx.fill();
+        ctx.fillStyle = 'black'; ctx.font = '10px Arial'; ctx.textAlign = 'center';
+        ctx.fillText(this.type === 'HEAL' ? '+' : '3x', this.x, this.y + 4);
+    }
+}
+
+class Player {
+    constructor() {
+        this.x = canvas.width / 2; 
+        this.y = canvas.height - 80;
+        this.radius = 20; 
+        this.hp = 100; this.maxHp = 100;
+        this.element = 'FIRE'; this.color = '#ff4500';
+        this.tripleShotTime = 0;
+    }
+    update() {
+        if(this.tripleShotTime > 0) this.tripleShotTime--;
+        ui.hpBar.style.width = (this.hp / this.maxHp * 100) + '%';
+        ui.hpBar.style.backgroundColor = this.hp <= 30 ? 'red' : '#00ff00';
+    }
+    draw() {
+        ctx.fillStyle = '#333'; ctx.fillRect(this.x - 25, this.y + 10, 50, 20);
         ctx.beginPath(); ctx.arc(this.x, this.y, this.radius, 0, Math.PI*2);
         ctx.fillStyle = this.color; 
-        ctx.shadowBlur = 20; ctx.shadowColor = this.color;
+        ctx.shadowBlur = this.tripleShotTime > 0 ? 30 : 20;
+        ctx.shadowColor = this.tripleShotTime > 0 ? 'yellow' : this.color;
         ctx.fill(); ctx.shadowBlur = 0;
-        
-        // Mira
         ctx.beginPath(); ctx.moveTo(this.x, this.y); ctx.lineTo(input.mouse.x, input.mouse.y);
-        ctx.strokeStyle = this.color; ctx.globalAlpha = 0.3; ctx.setLineDash([5,5]); ctx.stroke();
-        ctx.globalAlpha = 1; ctx.setLineDash([]);
+        ctx.strokeStyle = this.color; ctx.globalAlpha = 0.3; ctx.setLineDash([5,5]); ctx.stroke(); ctx.globalAlpha = 1; ctx.setLineDash([]);
     }
     switch() {
         this.element = this.element === 'FIRE' ? 'ICE' : 'FIRE';
@@ -292,9 +340,9 @@ class Player {
 class Enemy {
     constructor(x, y, type) {
         this.x = x; this.y = y; this.type = type;
-        this.radius = 18;
+        this.radius = 30 + (game.wave * 2); 
         this.color = type === 'FIRE' ? '#ff3300' : '#00ccff';
-        this.speed = Math.random() * (1 + (game.wave * 0.2)) + 1;
+        this.speed = 0.8 + (game.wave * 0.1); 
     }
     update() {
         const angle = Math.atan2(player.y - this.y, player.x - this.x);
@@ -304,13 +352,12 @@ class Enemy {
     draw() {
         ctx.save(); ctx.translate(this.x, this.y);
         ctx.fillStyle = this.color; ctx.beginPath();
-        if(this.type === 'FIRE') { // Triangulo
-            ctx.moveTo(0, -18); ctx.lineTo(18, 18); ctx.lineTo(-18, 18);
-        } else { // Quadrado
-            ctx.fillRect(-15, -15, 30, 30);
+        if(this.type === 'FIRE') { 
+            ctx.moveTo(0, -this.radius); ctx.lineTo(this.radius, this.radius); ctx.lineTo(-this.radius, this.radius);
+        } else { 
+            const s = this.radius * 0.8; ctx.fillRect(-s, -s, s*2, s*2);
         }
-        ctx.fill(); ctx.strokeStyle = 'white'; ctx.lineWidth = 2; ctx.stroke();
-        ctx.restore();
+        ctx.fill(); ctx.strokeStyle = 'white'; ctx.lineWidth = 3; ctx.stroke(); ctx.restore();
     }
 }
 
@@ -318,48 +365,71 @@ class Projectile {
     constructor(x, y, angle, type, color) {
         this.x = x; this.y = y; this.type = type; this.color = color;
         this.vx = Math.cos(angle) * 12; this.vy = Math.sin(angle) * 12;
-        this.life = 100;
+        this.life = 120;
     }
     update() { this.x += this.vx; this.y += this.vy; this.life--; }
     draw() { ctx.beginPath(); ctx.arc(this.x, this.y, 6, 0, Math.PI*2); ctx.fillStyle = this.color; ctx.fill(); }
 }
 
-// --- FUNÇÕES AUXILIARES ---
 function createExplosion(x, y, color, count=8) {
     for(let i=0; i<count; i++) {
-        entities.particles.push({
-            x, y, color, 
-            vx: (Math.random()-0.5)*10, vy: (Math.random()-0.5)*10, 
-            life: 1.0 
-        });
+        entities.particles.push({ x, y, color, vx:(Math.random()-0.5)*10, vy:(Math.random()-0.5)*10, life:1.0 });
     }
 }
 
 function spawnEnemies() {
     clearInterval(spawnTimer);
-    const interval = Math.max(400, 1200 - (game.wave * 100)); // Fica mais rápido
+    const interval = Math.max(800, 2000 - (game.wave * 100));
     spawnTimer = setInterval(() => {
         if(!game.running) return;
-        const radius = 30;
+        const radius = 30 + (game.wave * 2);
+        const buffer = radius + 50;
         let x, y;
-        if(Math.random()<0.5) { x = Math.random()<0.5 ? -radius : canvas.width+radius; y = Math.random()*canvas.height; }
-        else { x = Math.random()*canvas.width; y = Math.random()<0.5 ? -radius : canvas.height+radius; }
+        const edge = Math.random();
+        if(edge < 0.5) { x = Math.random() * canvas.width; y = -buffer; } 
+        else if (edge < 0.75) { x = -buffer; y = Math.random() * (canvas.height * 0.6); } 
+        else { x = canvas.width + buffer; y = Math.random() * (canvas.height * 0.6); }
         entities.enemies.push(new Enemy(x, y, Math.random()<0.5?'FIRE':'ICE'));
     }, interval);
 }
 
-// --- LOOP PRINCIPAL ---
+function showMsg(text) {
+    ui.gameMsg.innerText = text; ui.gameMsg.style.display = 'block';
+    setTimeout(() => ui.gameMsg.style.display = 'none', 2000);
+}
+
+function addCombo(amount) {
+    game.combo++;
+    ui.comboVal.innerText = game.combo;
+    ui.comboDisplay.style.display = 'block';
+    return amount * Math.min(game.combo, 5);
+}
+
+function resetCombo() {
+    if(game.combo > 5) showMsg("COMBO PERDIDO!");
+    game.combo = 0;
+    ui.comboDisplay.style.display = 'none';
+}
+
 function gameLoop() {
     if(!game.running) return;
     requestAnimationFrame(gameLoop);
     
-    // Fundo
     ctx.fillStyle = '#050510'; ctx.fillRect(0,0,canvas.width,canvas.height);
+    entities.stars.forEach(s => { s.update(); s.draw(); });
     
-    // Player
     player.update(); player.draw();
     
-    // Partículas
+    entities.powerups.forEach((p, i) => {
+        p.update(); p.draw();
+        if(Math.hypot(player.x - p.x, player.y - p.y) < player.radius + p.radius) {
+            if(p.type === 'HEAL') { player.hp = Math.min(player.hp + 30, 100); showMsg("CURA!"); }
+            if(p.type === 'TRIPLE') { player.tripleShotTime = 300; showMsg("TIRO TRIPLO!"); }
+            AudioSys.sfx.powerup();
+            entities.powerups.splice(i, 1);
+        }
+    });
+
     entities.particles.forEach((p, i) => {
         p.x += p.vx; p.y += p.vy; p.vx *= 0.9; p.vy *= 0.9; p.life -= 0.05;
         ctx.globalAlpha = p.life; ctx.fillStyle = p.color; 
@@ -367,44 +437,48 @@ function gameLoop() {
         if(p.life <= 0) entities.particles.splice(i, 1);
     });
 
-    // Projéteis
     entities.projectiles.forEach((p, i) => {
         p.update(); p.draw();
         if(p.life<=0) entities.projectiles.splice(i, 1);
     });
 
-    // Inimigos e Colisões
     entities.enemies.forEach((e, i) => {
         e.update(); e.draw();
         
-        // Dano no Player
         if(Math.hypot(player.x - e.x, player.y - e.y) < player.radius + e.radius) {
-            player.hp -= 10;
-            createExplosion(player.x, player.y, 'white');
+            player.hp -= 20; resetCombo();
+            createExplosion(player.x, player.y, 'white', 15);
             entities.enemies.splice(i, 1);
             AudioSys.sfx.hit();
             if(player.hp <= 0) gameOver();
         }
-
-        // Colisão Tiro Inimigo
+        
         entities.projectiles.forEach((p, pi) => {
             if(Math.hypot(p.x - e.x, p.y - e.y) < e.radius + 6) {
-                // Lógica de Elementos
                 const effective = (p.type === 'FIRE' && e.type === 'ICE') || (p.type === 'ICE' && e.type === 'FIRE');
                 
                 if(effective) {
                     entities.enemies.splice(i, 1);
                     entities.projectiles.splice(pi, 1);
-                    createExplosion(e.x, e.y, e.color);
-                    game.score += 100;
+                    createExplosion(e.x, e.y, e.color, 20);
+                    
+                    game.score += addCombo(100);
                     ui.currentScore.innerText = game.score;
                     AudioSys.sfx.hit();
                     
-                    // Aumenta Dificuldade
-                    if(game.score % 1000 === 0) { game.wave++; spawnEnemies(); }
+                    if(Math.random() < 0.1) entities.powerups.push(new PowerUp(e.x, e.y));
+
+                    const nextWave = Math.floor(game.score / 2000) + 1;
+                    if(nextWave > game.wave) {
+                        game.wave = nextWave;
+                        ui.waveDisplay.innerText = game.wave;
+                        showMsg(`ONDA ${game.wave}!`);
+                        spawnEnemies();
+                    }
                 } else {
                     entities.projectiles.splice(pi, 1);
-                    createExplosion(p.x, p.y, 'gray', 3); // Tiro falhou
+                    createExplosion(p.x, p.y, 'gray', 3);
+                    resetCombo();
                 }
             }
         });
@@ -412,19 +486,37 @@ function gameLoop() {
 }
 
 // --- CONTROLES DE FLUXO ---
-function startGame() {
+function initStars() {
+    entities.stars = [];
+    for(let i=0; i<50; i++) entities.stars.push(new Star());
+}
+
+// 1. Botão "PRÓXIMO" do Menu
+ui.nextBtn.addEventListener('click', () => {
     const nameVal = ui.inputName.value.trim();
-    if(!nameVal) { alert("Digite seu nome, herói!"); return; }
-    
+    if(!nameVal) { alert("Digite seu nome!"); return; }
     game.playerName = nameVal.toUpperCase();
-    game.score = 0; game.wave = 1; game.running = true;
+    
+    // Troca de tela: Menu -> Tutorial
+    ui.menuScreen.classList.add('hidden');
+    ui.tutorialScreen.classList.remove('hidden');
+});
+
+// 2. Botão "ENTENDI" do Tutorial (INICIA O JOGO)
+ui.startBtn.addEventListener('click', startGame);
+
+function startGame() {
+    game.score = 0; game.wave = 1; game.combo = 0; game.running = true;
+    ui.waveDisplay.innerText = "1";
     
     player = new Player();
-    entities = { enemies: [], projectiles: [], particles: [] };
+    entities.enemies = []; entities.projectiles = []; entities.particles = []; entities.powerups = [];
+    initStars();
     
     ui.overlay.style.display = 'none';
     ui.hud.classList.remove('hidden');
     ui.menuScreen.classList.add('hidden');
+    ui.tutorialScreen.classList.add('hidden');
     ui.gameOverScreen.classList.add('hidden');
     ui.currentScore.innerText = "0";
     
@@ -436,73 +528,51 @@ function startGame() {
 function gameOver() {
     game.running = false;
     clearInterval(spawnTimer);
-    
-    // Verifica Recorde
     const isNewRecord = SaveSystem.save(game.playerName, game.score);
     updateRecordDisplays();
-    
     ui.hud.classList.add('hidden');
     ui.overlay.style.display = 'flex';
     ui.gameOverScreen.classList.remove('hidden');
-    
     ui.finalScore.innerText = game.score;
-    
-    if(isNewRecord) {
-        ui.newRecordMsg.style.display = 'block';
-        AudioSys.sfx.win();
-    } else {
-        ui.newRecordMsg.style.display = 'none';
-    }
+    ui.newRecordMsg.style.display = isNewRecord ? 'block' : 'none';
+    if(isNewRecord) AudioSys.sfx.win();
 }
 
-// --- INPUTS ATUALIZADOS ---
-
-// Bloqueia menu de contexto (botão direito padrão)
+// Inputs
 window.addEventListener('contextmenu', e => e.preventDefault());
-
-window.addEventListener('keydown', e => {
-    const k = e.key.toLowerCase();
-    if(k==='w') input.keys.w=true; if(k==='a') input.keys.a=true;
-    if(k==='s') input.keys.s=true; if(k==='d') input.keys.d=true;
-    if(e.key==='Shift') input.keys.shift=true;
-    // Mantemos espaço como alternativa para quem não tiver mouse bom
-    if(e.code==='Space' && game.running) player.switch();
-});
-
-window.addEventListener('keyup', e => {
-    const k = e.key.toLowerCase();
-    if(k==='w') input.keys.w=false; if(k==='a') input.keys.a=false;
-    if(k==='s') input.keys.s=false; if(k==='d') input.keys.d=false;
-    if(e.key==='Shift') input.keys.shift=false;
-});
-
+window.addEventListener('keydown', e => { if(e.code==='Space' && game.running) player.switch(); });
 window.addEventListener('mousemove', e => { input.mouse.x = e.clientX; input.mouse.y = e.clientY; });
 
-// NOVA LÓGICA DE MOUSE:
 window.addEventListener('mousedown', (e) => {
     if(!game.running) return;
-    
     if (e.button === 0) { 
-        // Botão Esquerdo (0) -> ATIRAR
         const angle = Math.atan2(input.mouse.y - player.y, input.mouse.x - player.x);
         entities.projectiles.push(new Projectile(player.x, player.y, angle, player.element, player.color));
+        if(player.tripleShotTime > 0) {
+            entities.projectiles.push(new Projectile(player.x, player.y, angle - 0.2, player.element, player.color));
+            entities.projectiles.push(new Projectile(player.x, player.y, angle + 0.2, player.element, player.color));
+        }
         AudioSys.sfx.shoot();
-    } 
-    else if (e.button === 2) {
-        // Botão Direito (2) -> TROCAR
+    } else if (e.button === 2) {
         player.switch();
     }
 });
 
-// Botões UI
-ui.startBtn.addEventListener('click', startGame);
-ui.restartBtn.addEventListener('click', () => {
-    ui.gameOverScreen.classList.add('hidden');
-    ui.menuScreen.classList.remove('hidden');
+ui.restartBtn.addEventListener('click', () => { 
+    ui.gameOverScreen.classList.add('hidden'); 
+    ui.menuScreen.classList.remove('hidden'); 
 });
 
-// Init
 updateRecordDisplays();
+initStars();
+function menuLoop() {
+    if(!game.running) {
+        ctx.fillStyle = '#050510'; ctx.fillRect(0,0,canvas.width,canvas.height);
+        entities.stars.forEach(s => { s.update(); s.draw(); });
+        requestAnimationFrame(menuLoop);
+    }
+}
+menuLoop();
 
 </script>
 </body>
