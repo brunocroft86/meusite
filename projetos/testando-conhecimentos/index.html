@@ -1,0 +1,372 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mulheres Conectadas - Prof. Bruno Galvão</title>
+    
+    <link rel="icon" href="../../assets/imagem/logofv.png" type="image/jpeg">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"/>
+    
+    <style>
+        :root {
+            --primary: #ff0055;       
+            --primary-dark: #b3003b;  
+            --success: #00e676;       
+            --error: #ff1744;         
+        }
+
+        body { 
+            font-family: 'Poppins', sans-serif; 
+            margin: 0; padding: 0; color: #000;
+            overflow-x: hidden;
+            
+            /* FUNDO GERAL DA PÁGINA */
+            background: linear-gradient(135deg, #6600cc, #cc0066);
+            min-height: 100vh;
+        }
+
+        /* --- PARTÍCULAS VOADORAS --- */
+        .circles {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            overflow: hidden; z-index: 0; pointer-events: none;
+        }
+        .circles li {
+            position: absolute; display: block; list-style: none;
+            width: 20px; height: 20px; background: rgba(255, 255, 255, 0.2);
+            animation: animate 25s linear infinite; bottom: -150px;
+            border-radius: 10px;
+        }
+        .circles li:nth-child(1) { left: 25%; width: 80px; height: 80px; animation-delay: 0s; }
+        .circles li:nth-child(2) { left: 10%; width: 20px; height: 20px; animation-delay: 2s; animation-duration: 12s; }
+        .circles li:nth-child(3) { left: 70%; width: 20px; height: 20px; animation-delay: 4s; }
+        .circles li:nth-child(4) { left: 40%; width: 60px; height: 60px; animation-delay: 0s; animation-duration: 18s; }
+        .circles li:nth-child(5) { left: 65%; width: 20px; height: 20px; animation-delay: 0s; }
+        .circles li:nth-child(6) { left: 75%; width: 110px; height: 110px; animation-delay: 3s; }
+        .circles li:nth-child(7) { left: 35%; width: 150px; height: 150px; animation-delay: 7s; }
+        
+        @keyframes animate {
+            0% { transform: translateY(0) rotate(0deg); opacity: 1; border-radius: 0; }
+            100% { transform: translateY(-1000px) rotate(720deg); opacity: 0; border-radius: 50%; }
+        }
+
+        /* --- CABEÇALHO --- */
+        .header-banner {
+            background-image: url('../../assets/imagem/imgback.jpeg');
+            
+            background-size: cover; 
+            background-position: center center;
+            background-repeat: no-repeat;
+            
+            min-height: 380px;
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-end;
+            align-items: center;
+            position: relative;
+            padding-bottom: 40px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.4);
+            z-index: 2;
+        }
+
+        .header-banner::before {
+            content: ""; position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0, 0, 0, 0.2);
+        }
+
+        .header-content { 
+            position: relative; z-index: 2; text-align: center;
+            background: rgba(255, 255, 255, 0.95); 
+            padding: 40px 30px 20px; 
+            border-radius: 20px;
+            box-shadow: 0 15px 40px rgba(0,0,0,0.5);
+            max-width: 90%; width: 600px;
+            border-bottom: 6px solid var(--primary);
+            margin-bottom: -60px;
+        }
+
+        .prof-foto {
+            width: 160px; height: 160px; border-radius: 50%;
+            border: 6px solid var(--primary);
+            object-fit: cover; background: white;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.4);
+            position: absolute; top: -80px; left: 50%; transform: translateX(-50%);
+            animation: pulse 3s infinite;
+        }
+
+        @keyframes pulse { 0% { box-shadow: 0 0 0 0 rgba(255, 0, 85, 0.7); } 70% { box-shadow: 0 0 0 15px rgba(255, 0, 85, 0); } 100% { box-shadow: 0 0 0 0 rgba(255, 0, 85, 0); } }
+
+        h1 { 
+            font-size: 2.2rem; margin: 60px 0 5px; 
+            color: var(--primary-dark);
+            line-height: 1.2; font-weight: 800;
+        }
+
+        .subtitle { font-weight: 700; font-size: 1.1rem; color: #333; }
+
+        .container { 
+            max-width: 800px; margin: 100px auto 80px; 
+            background: rgba(255, 255, 255, 0.9); 
+            padding: 30px; border-radius: 30px; 
+            box-shadow: 0 25px 60px rgba(0,0,0,0.3);
+            position: relative; z-index: 3; width: 90%;
+            backdrop-filter: blur(5px);
+        }
+
+        .question { 
+            background: #fff;
+            margin-bottom: 25px; padding: 25px; border-radius: 20px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            border-left: 10px solid var(--primary);
+            border: 1px solid #eee;
+            animation: fadeIn 0.5s;
+        }
+
+        .question h3 { margin: 0 0 20px; font-size: 1.2rem; display: flex; align-items: center; }
+        .question-number {
+            background: var(--primary); color: white;
+            min-width: 40px; height: 40px; border-radius: 50%;
+            display: flex; align-items: center; justify-content: center;
+            margin-right: 15px; font-weight: 800;
+        }
+
+        .options { display: grid; gap: 10px; }
+        .option-label { 
+            display: flex; align-items: center; padding: 15px; 
+            border-radius: 12px; background: #fff; border: 2px solid #ddd; 
+            cursor: pointer; transition: 0.2s; font-weight: 600;
+            position: relative;
+        }
+        .option-label:hover { border-color: var(--primary); background: #fff0f5; }
+        .option-label.selected { border-color: var(--primary); background: var(--primary); color: white; }
+        
+        .option-label.correct-answer { 
+            background: var(--success) !important; color: white !important; 
+            border-color: var(--success) !important; 
+        }
+        .option-label.wrong-answer { 
+            background: var(--error) !important; color: white !important; 
+            border-color: var(--error) !important; 
+        }
+        
+        .option-label.was-correct { 
+            border: 3px solid #00b894 !important; 
+            background-color: #ccffdd !important; 
+            color: #006400 !important; 
+            font-weight: 800;
+        }
+        
+        .option-label.was-correct::after {
+            content: "✅ CORRETA";
+            position: absolute;
+            right: 15px;
+            font-size: 0.9rem;
+            color: #006400;
+        }
+
+        .option-label input { display: none; }
+        .custom-radio { width: 20px; height: 20px; border: 2px solid #666; border-radius: 50%; margin-right: 15px; background: white; }
+        
+        .feedback { margin-top: 15px; padding: 15px; border-radius: 10px; text-align: center; display: none; font-weight: bold; }
+        .feedback.ok { background: #e0f2f1; color: #00695c; border: 2px solid var(--success); }
+        .feedback.no { background: #ffebee; color: #c62828; border: 2px solid var(--error); }
+
+        .btn-action { 
+            width: 100%; padding: 20px; margin-top: 20px;
+            background: linear-gradient(45deg, #ff0055, #ff00cc);
+            color: white; border: none; border-radius: 50px; 
+            font-size: 1.4rem; font-weight: 800; cursor: pointer; 
+            box-shadow: 0 10px 25px rgba(255, 0, 85, 0.4);
+            transition: transform 0.2s;
+        }
+        .btn-action:hover { transform: scale(1.02); }
+        
+        #result-box { display: none; text-align: center; margin-top: 40px; padding: 30px; background: white; border-radius: 20px; border: 4px solid var(--primary); }
+
+        @media (max-width: 600px) {
+            .header-banner { min-height: 250px; }
+            .header-content { width: 90%; padding: 30px 20px 20px; }
+            .prof-foto { width: 130px; height: 130px; top: -65px; }
+            h1 { font-size: 1.6rem; margin-top: 50px; }
+            .option-label.was-correct::after { position: relative; display: block; right: auto; margin-left: 35px; }
+        }
+    </style>
+</head>
+<body>
+
+<ul class="circles">
+    <li></li><li></li><li></li><li></li><li></li><li></li><li></li><li></li>
+</ul>
+
+<div class="header-banner">
+    <div class="header-content animate__animated animate__zoomIn">
+        <img src="../../assets/imagem/logoleao.jpeg" alt="Prof. Bruno" class="prof-foto">
+        <h1>Mulheres Conectadas</h1>
+        <div class="subtitle">Testando seus conhecimentos • Prof. Bruno Galvão</div>
+    </div>
+</div>
+
+<div class="container animate__animated animate__fadeInUp">
+    <form id="quizForm">
+        <div id="questions-container"></div>
+        <button type="button" class="btn-action" onclick="corrigirQuiz()">CORRIGIR AGORA ✨</button>
+    </form>
+    <div id="result-box"></div>
+</div>
+
+<script>
+    // --- BANCO DE DADOS GIGANTE (Mais de 40 perguntas) ---
+    // Agora o sistema tem muitas opções para sortear 12 diferentes a cada vez.
+    const allQuestionsDB = [
+        // --- HARDWARE E INTRODUÇÃO ---
+        { text: "O que é o 'Desktop'?", options: [{text:"É a Área de Trabalho",val:1}, {text:"É a lixeira",val:0}, {text:"É o teclado",val:0}, {text:"É uma pasta vazia",val:0}] },
+        { text: "Para que serve a 'Lixeira' do Windows?", options: [{text:"Guardar arquivos importantes",val:0}, {text:"Armazenar arquivos excluídos temporariamente",val:1}, {text:"Limpar a tela do monitor",val:0}, {text:"Enviar e-mails",val:0}] },
+        { text: "Qual destes é um dispositivo de armazenamento?", options: [{text:"Pen Drive",val:1}, {text:"Mouse",val:0}, {text:"Caixa de Som",val:0}, {text:"Monitor",val:0}] },
+        { text: "Hardware é a parte do computador que:", options: [{text:"Podemos tocar (física)",val:1}, {text:"São os programas",val:0}, {text:"É a internet",val:0}, {text:"É um vírus",val:0}] },
+        { text: "O 'cérebro' do computador é a:", options: [{text:"CPU (Processador)",val:1}, {text:"Impressora",val:0}, {text:"Webcam",val:0}, {text:"Caixa de som",val:0}] },
+        { text: "O que significa Informática?", options: [{text:"Redes Sociais",val:0}, {text:"Informação + Automática",val:1}, {text:"Conserto de PC",val:0}, {text:"Jogos",val:0}] },
+        { text: "Qual destes é um exemplo de Software?", options: [{text:"Teclado",val:0}, {text:"Windows",val:1}, {text:"Monitor",val:0}, {text:"Mouse",val:0}] },
+        { text: "Qual dispositivo usamos para digitar?", options: [{text:"Mouse",val:0}, {text:"Teclado",val:1}, {text:"Monitor",val:0}, {text:"Impressora",val:0}] },
+        { text: "Qual destes dispositivos é de SAÍDA (mostra o resultado)?", options: [{text:"Teclado",val:0}, {text:"Microfone",val:0}, {text:"Monitor (Tela)",val:1}, {text:"Mouse",val:0}] },
+
+        // --- WINDOWS E PASTAS ---
+        { text: "O que é uma 'Pasta' no computador?", options: [{text:"Um vírus",val:0}, {text:"Um local para organizar arquivos",val:1}, {text:"Um programa de desenho",val:0}, {text:"Uma peça física",val:0}] },
+        { text: "Para abrir um programa, geralmente usamos:", options: [{text:"Duplo Clique",val:1}, {text:"Botão direito e 'Excluir'",val:0}, {text:"Arrastar para a lixeira",val:0}, {text:"Desligar o monitor",val:0}] },
+
+        // --- WORD ---
+        { text: "Qual destes botões centraliza o texto?", options: [{text:"Alinhar à Esquerda",val:0}, {text:"Centralizar",val:1}, {text:"Justificar",val:0}, {text:"Negrito",val:0}] },
+        { text: "Para mudar o estilo da letra, alteramos a:", options: [{text:"Margem",val:0}, {text:"Fonte",val:1}, {text:"Página",val:0}, {text:"Impressora",val:0}] },
+        { text: "O atalho Ctrl + N serve para:", options: [{text:"Salvar",val:0}, {text:"Aplicar Negrito",val:1}, {text:"Nova página",val:0}, {text:"Navegar",val:0}] },
+        { text: "O Microsoft Word serve para:", options: [{text:"Fazer contas",val:0}, {text:"Criar textos",val:1}, {text:"Criar slides",val:0}, {text:"Navegar",val:0}] },
+        { text: "Botão que deixa o texto mais grosso/escuro:", options: [{text:"Itálico (I)",val:0}, {text:"Negrito (N)",val:1}, {text:"Sublinhado (S)",val:0}, {text:"Cor (A)",val:0}] },
+        { text: "Atalho para SALVAR documento no word:", options: [{text:"Ctrl + B",val:1}, {text:"Ctrl + C",val:0}, {text:"Ctrl + V",val:0}, {text:"Alt + F4",val:0}] },
+        { text: "Atalho Ctrl + C serve para:", options: [{text:"Colar",val:0}, {text:"Copiar",val:1}, {text:"Cortar",val:0}, {text:"Imprimir",val:0}] },
+        { text: "Atalho Ctrl + V serve para:", options: [{text:"Colar",val:1}, {text:"Copiar",val:0}, {text:"Salvar",val:0}, {text:"Fechar",val:0}] },
+        { text: "Qual a extensão padrão dos arquivos do Word?", options: [{text:".mp3",val:0}, {text:".docx",val:1}, {text:".xlsx",val:0}, {text:".jpg",val:0}] },
+
+        // --- EXCEL ---
+        { text: "Qual sinal usamos para MULTIPLICAR no Excel?", options: [{text:"x",val:0}, {text:"* (Asterisco)",val:1}, {text:"/",val:0}, {text:"+",val:0}] },
+        { text: "Qual sinal usamos para DIVIDIR no Excel?", options: [{text:"÷",val:0}, {text:"/",val:1}, {text:"*",val:0}, {text:":",val:0}] },
+        { text: "Para achar o MAIOR número de uma lista, usamos a função:", options: [{text:"=MÁXIMO()",val:1}, {text:"=MINIMO()",val:0}, {text:"=SOMA()",val:0}, {text:"=MÉDIA()",val:0}] },
+        { text: "O Excel é um programa de:", options: [{text:"Edição de Fotos",val:0}, {text:"Planilhas e Cálculos",val:1}, {text:"Antivírus",val:0}, {text:"Vídeos",val:0}] },
+        { text: "Encontro de Coluna e Linha no Excel:", options: [{text:"Tabela",val:0}, {text:"Célula",val:1}, {text:"Gráfico",val:0}, {text:"Slide",val:0}] },
+        { text: "Toda fórmula no Excel começa com:", options: [{text:"@",val:0}, {text:"=",val:1}, {text:"#",val:0}, {text:"$",val:0}] },
+        { text: "Função para somar valores:", options: [{text:"=TUDO()",val:0}, {text:"=SOMA()",val:1}, {text:"=MAIS()",val:0}, {text:"=CALC()",val:0}] },
+        { text: "Colunas no Excel são identificadas por:", options: [{text:"Letras (A,B,C)",val:1}, {text:"Números (1,2,3)",val:0}, {text:"Cores",val:0}, {text:"Símbolos",val:0}] },
+
+        // --- POWERPOINT ---
+        { text: "Podemos inserir imagens nos slides?", options: [{text:"Não, apenas texto",val:0}, {text:"Sim, fotos e vídeos",val:1}, {text:"Apenas se pagar",val:0}, {text:"Apenas preto e branco",val:0}] },
+        { text: "O PowerPoint é usado para:", options: [{text:"Escrever livros",val:0}, {text:"Criar apresentações (slides)",val:1}, {text:"Planilhas",val:0}, {text:"Ouvir música",val:0}] },
+        { text: "Tecla para iniciar a apresentação (Tela Cheia):", options: [{text:"Esc",val:0}, {text:"F5",val:1}, {text:"Enter",val:0}, {text:"Del",val:0}] },
+        { text: "Efeito visual ao mudar de slide:", options: [{text:"Animação",val:0}, {text:"Transição",val:1}, {text:"Formatação",val:0}, {text:"Download",val:0}] },
+        { text: "Tecla para SAIR da apresentação:", options: [{text:"Esc",val:1}, {text:"Enter",val:0}, {text:"Ctrl",val:0}, {text:"Alt",val:0}] },
+
+        // --- INTERNET E SEGURANÇA ---
+        { text: "O que é 'Wi-Fi'?", options: [{text:"Um vírus",val:0}, {text:"Internet sem fio",val:1}, {text:"Nome de um site",val:0}, {text:"Uma senha",val:0}] },
+        { text: "Qual destas é uma Rede Social?", options: [{text:"Excel",val:0}, {text:"Instagram",val:1}, {text:"Calculadora",val:0}, {text:"Bloco de Notas",val:0}] },
+        { text: "Todo endereço de e-mail tem que ter este símbolo:", options: [{text:"#",val:0}, {text:"@",val:1}, {text:"&",val:0}, {text:"$",val:0}] },
+        { text: "O que é um 'Navegador'?", options: [{text:"Programa para abrir sites",val:1}, {text:"Vírus",val:0}, {text:"Peça do PC",val:0}, {text:"Rede Social",val:0}] },
+        { text: "Significado de Download:", options: [{text:"Enviar para net",val:0}, {text:"Baixar para o PC",val:1}, {text:"Desligar",val:0}, {text:"Apagar",val:0}] },
+        { text: "Significado de Upload:", options: [{text:"Baixar",val:0}, {text:"Enviar para net",val:1}, {text:"Assistir",val:0}, {text:"Imprimir",val:0}] },
+        { text: "O que faz um Link?", options: [{text:"Leva a outra página",val:1}, {text:"Bloqueia tela",val:0}, {text:"Aumenta net",val:0}, {text:"Limpa histórico",val:0}] },
+        { text: "Escrever tudo em MAIÚSCULAS parece que estamos...:", options: [{text:"Feliz",val:0}, {text:"GRITANDO",val:1}, {text:"Triste",val:0}, {text:"Bonito",val:0}] },
+        { text: "Senha considerada FORTE:", options: [{text:"123456",val:0}, {text:"Data nascimento",val:0}, {text:"Nome123",val:0}, {text:"S3nh@!Forte",val:1}] },
+        { text: "O cadeado no endereço do site indica:", options: [{text:"Site perigoso",val:0}, {text:"Site seguro (HTTPS)",val:1}, {text:"Site lento",val:0}, {text:"Site pago",val:0}] },
+        { text: "Homepage significa:", options: [{text:"Página de erro",val:0}, {text:"Página Inicial",val:1}, {text:"Página Final",val:0}, {text:"Sair",val:0}] },
+        { text: "Atalho para IMPRIMIR:", options: [{text:"Ctrl + I",val:0}, {text:"Ctrl + P",val:1}, {text:"Ctrl + S",val:0}, {text:"Ctrl + A",val:0}] },
+        { text: "O que é um 'Domínio' na internet?", options: [{text:"O dono da internet",val:0}, {text:"O endereço do site (ex: google.com)",val:1}, {text:"A senha do Wi-Fi",val:0}, {text:"Um programa de e-mail",val:0}] }
+    ];
+
+    function shuffleArray(array) {
+        for (let i = array.length - 1; i > 0; i--) {
+            const j = Math.floor(Math.random() * (i + 1));
+            [array[i], array[j]] = [array[j], array[i]];
+        }
+        return array;
+    }
+
+    let quizQuestions = [];
+
+    window.onload = function() {
+        window.scrollTo(0, 0);
+        if ('scrollRestoration' in history) history.scrollRestoration = 'manual';
+
+        // Aqui está o segredo: Sorteia do banco GIGANTE e pega só 12
+        const shuffledDB = shuffleArray([...allQuestionsDB]);
+        quizQuestions = shuffledDB.slice(0, 12);
+        
+        const container = document.getElementById('questions-container');
+        
+        quizQuestions.forEach((q, index) => {
+            const qIndex = index + 1;
+            let optionsHTML = '';
+            q.options.forEach((opt) => {
+                optionsHTML += `
+                    <label class="option-label" onclick="selectOption(this, 'q${qIndex}')">
+                        <input type="radio" name="q${qIndex}" value="${opt.val}"> 
+                        <div class="custom-radio"></div> ${opt.text}
+                    </label>
+                `;
+            });
+            container.innerHTML += `
+                <div class="question animate__animated animate__fadeInUp" style="animation-delay: ${index * 0.1}s">
+                    <h3><span class="question-number">${qIndex}</span> ${q.text}</h3>
+                    <div class="options">${optionsHTML}</div>
+                    <div class="feedback" id="f${qIndex}"></div>
+                </div>
+            `;
+        });
+    };
+
+    window.selectOption = function(label, groupName) {
+        const allLabels = document.querySelectorAll(`input[name="${groupName}"]`);
+        allLabels.forEach(input => { input.parentElement.classList.remove('selected'); });
+        label.classList.add('selected');
+        label.querySelector('input').checked = true;
+    };
+
+    window.corrigirQuiz = function() {
+        let acertos = 0;
+        const total = quizQuestions.length;
+        
+        quizQuestions.forEach((q, index) => {
+            const qIndex = index + 1;
+            const inputs = document.getElementsByName("q" + qIndex);
+            const feedbackDiv = document.getElementById("f" + qIndex);
+            let userAns = null; let labelSelected = null; let labelCorrect = null;
+
+            inputs.forEach(input => {
+                const label = input.parentElement;
+                label.classList.remove('correct-answer', 'wrong-answer', 'was-correct');
+                if (input.checked) { userAns = parseInt(input.value); labelSelected = label; }
+                if (parseInt(input.value) === 1) labelCorrect = label;
+            });
+
+            feedbackDiv.style.display = 'block';
+            if (userAns === 1) {
+                acertos++; labelSelected.classList.add('correct-answer');
+                feedbackDiv.className = 'feedback ok'; feedbackDiv.innerHTML = "✅ ACERTOU!";
+            } else if (userAns === 0) {
+                labelSelected.classList.add('wrong-answer'); 
+                if(labelCorrect) labelCorrect.classList.add('was-correct');
+                feedbackDiv.className = 'feedback no'; feedbackDiv.innerHTML = "❌ ERROU (Veja a correta)";
+            } else {
+                if(labelCorrect) labelCorrect.classList.add('was-correct');
+                feedbackDiv.className = 'feedback no'; feedbackDiv.innerHTML = "⚠️ NÃO RESPONDEU";
+            }
+        });
+
+        const rBox = document.getElementById('result-box');
+        rBox.style.display = 'block';
+        rBox.innerHTML = `
+            <h2 style="color:var(--primary); font-size:3.5rem; margin:0">${((acertos/total)*10).toFixed(1)}</h2>
+            <p>Você acertou ${acertos} de ${total} questões.</p>
+            <button onclick="location.reload()" style="padding:15px 30px; background:#333; color:white; border:none; border-radius:50px; margin-top:20px; cursor:pointer;">REFAZER COM NOVAS PERGUNTAS 🔄</button>
+        `;
+        rBox.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    };
+</script>
+
+</body>
+</html>
