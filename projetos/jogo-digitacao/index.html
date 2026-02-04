@@ -1,0 +1,349 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Aula de Digitação - Prof. Bruno Galvão</title>
+    <link rel="shortcut icon" href="../../assets/imagem/logofv.png" type="image/x-icon">
+    <style>
+        /* --- ESTILOS PRINCIPAIS --- */
+        :root {
+            --cor-vermelha: #c0392b; 
+            --cor-branca: #ffffff;
+            --sombra: rgba(0,0,0,0.5);
+            --cor-ouro: #f1c40f;
+        }
+
+        body {
+            margin: 0;
+            font-family: 'Arial', sans-serif;
+            height: 100vh;
+            width: 100vw;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            overflow: hidden; 
+            
+            /* --- BACKGROUND (FUNDO) --- */
+            background: linear-gradient(rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.6)), 
+                        url('imagem/MC\ LOgo.jpeg');
+            
+            background-size: 100% 100%; 
+            background-position: center;
+            background-repeat: no-repeat;
+            
+            color: white;
+        }
+
+        /* --- CABEÇALHO --- */
+        header {
+            width: 100%;
+            background-color: var(--cor-vermelha);
+            padding: 10px 0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 4px solid var(--cor-branca);
+            box-shadow: 0 4px 10px var(--sombra);
+            position: relative;
+            z-index: 10;
+        }
+
+        .area-logo { flex: 1; padding-left: 30px; display: flex; align-items: center; }
+        .caixa-logo {
+            width: 80px; height: 80px; background-color: white; border-radius: 50%;
+            display: flex; align-items: center; justify-content: center; overflow: hidden; 
+            border: 3px solid white; box-shadow: 0 0 10px rgba(0,0,0,0.3);
+        }
+        .caixa-logo img { width: 100%; height: 100%; object-fit: cover; }
+
+        .area-titulo { flex: 2; text-align: center; }
+        .area-titulo h1 { margin: 0; font-size: 1.5rem; text-transform: uppercase; letter-spacing: 1px; text-shadow: 1px 1px 3px rgba(0,0,0,0.5); }
+        .area-titulo p { margin: 0; font-size: 0.9rem; opacity: 0.9; }
+
+        .area-timer { flex: 1; padding-right: 30px; text-align: right; }
+        #relogio {
+            font-size: 1.8rem; font-weight: bold; font-family: monospace;
+            background: rgba(0,0,0,0.3); padding: 5px 15px;
+            border-radius: 8px; border: 1px solid rgba(255,255,255,0.2);
+        }
+
+        /* --- ÁREA DO JOGO --- */
+        .container-jogo {
+            margin-top: 30px; 
+            background: rgba(255, 255, 255, 0.95);
+            padding: 30px;
+            border-radius: 20px;
+            width: 90%; max-width: 600px;
+            text-align: center;
+            position: relative;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.6);
+            max-height: 80vh; overflow-y: auto; color: #333;
+        }
+
+        #palavra {
+            color: var(--cor-vermelha); font-size: 3rem; font-weight: 900;
+            margin-bottom: 20px; text-transform: lowercase; word-wrap: break-word;
+        }
+
+        input {
+            width: 100%; box-sizing: border-box; padding: 15px; font-size: 1.2rem;
+            border: 2px solid #ccc; border-radius: 10px; text-align: center;
+            outline: none; color: #333; transition: 0.3s; margin-bottom: 10px;
+        }
+        input:focus { border-color: var(--cor-vermelha); box-shadow: 0 0 10px rgba(192, 57, 43, 0.2); }
+
+        .placar { margin-top: 20px; color: #555; font-size: 1.2rem; font-weight: bold; }
+        #pontos { color: var(--cor-vermelha); font-size: 1.5rem; }
+
+        #btn-acao {
+            background-color: var(--cor-vermelha); color: white; border: none;
+            padding: 15px 40px; font-size: 1.2rem; font-weight: bold;
+            border-radius: 50px; cursor: pointer; margin-top: 20px;
+            transition: transform 0.2s; width: 100%;
+        }
+        #btn-acao:hover { transform: scale(1.05); }
+
+        .escondido { display: none; }
+        .acertou { border-color: #27ae60 !important; color: #27ae60 !important; }
+
+        /* --- RANKING --- */
+        .ranking-box { margin-top: 20px; border-top: 2px solid #ddd; padding-top: 15px; text-align: left; }
+        .ranking-box h3 { color: var(--cor-vermelha); text-align: center; margin-bottom: 10px; text-transform: uppercase; }
+        .lista-ranking { list-style: none; padding: 0; color: #333; }
+        .lista-ranking li {
+            background: #eee; margin-bottom: 5px; padding: 10px;
+            border-radius: 5px; display: flex; justify-content: space-between; font-weight: bold;
+        }
+        .destaque-pontos { color: var(--cor-vermelha); }
+        .info-aluna { font-size: 0.9rem; color: #555; font-weight: normal; }
+    </style>
+</head>
+<body>
+
+    <header>
+        <div class="area-logo">
+            <div class="caixa-logo">
+                <img src="../../assets/imagem/logoleao.jpeg" alt="Logo">
+            </div>
+        </div>
+        <div class="area-titulo">
+            <h1>Prof. Bruno Galvão</h1>
+        </div>
+        <div class="area-timer">
+            <span id="relogio">10:00</span>
+        </div>
+    </header>
+
+    <div class="container-jogo">
+        
+        <div id="tela-inicial">
+            <h2 style="color: #333">Aula de Digitação</h2>
+            <p style="color: #666">Identifique-se para começar:</p>
+            
+            <input type="text" id="nome-aluna" placeholder="Nome da Aluna" required>
+            <input type="text" id="unidade-aluna" placeholder="Unidade de Ensino (Bairro)" required>
+
+            <button id="btn-acao" onclick="verificarDados()">COMEÇAR (10 min)</button>
+
+            <div class="ranking-box">
+                <h3>🏆 Ranking Top 3</h3>
+                <ul id="lista-ranking" class="lista-ranking">
+                    <li style="text-align:center; color:#777;">Carregando...</li>
+                </ul>
+            </div>
+        </div>
+
+        <div id="tela-jogo" class="escondido">
+            <div id="palavra">...</div>
+            <input type="text" id="input-texto" placeholder="Digite aqui..." autocomplete="off">
+            <div class="placar">Acertos: <span id="pontos">0</span></div>
+        </div>
+
+        <div id="tela-fim" class="escondido">
+            <h2 style="color: var(--cor-vermelha)">FIM DO TEMPO!</h2>
+            <h1 style="color: #333; font-size: 3rem; margin: 0;"><span id="pontos-finais">0</span></h1>
+            <p style="color: #555">Palavras digitadas corretamente</p>
+            <p id="mensagem-salvo" style="color: green; font-weight: bold;">Pontuação Salva!</p>
+            <button id="btn-acao" onclick="location.reload()">VER RANKING</button>
+        </div>
+
+    </div>
+
+    <script>
+        const TEMPO_INICIAL = 600; // 10 Minutos (600s)
+        
+        // --- BANCO DE 200 PALAVRAS ---
+        const listaPalavras = [
+            // HARDWARE (50 palavras)
+            'teclado', 'mouse', 'monitor', 'tela', 'cabo', 'cpu', 'gabinete', 'fonte', 'cooler', 'placa',
+            'vídeo', 'som', 'rede', 'memória', 'ram', 'rom', 'disco', 'rígido', 'ssd', 'hd',
+            'pendrive', 'usb', 'hdmi', 'vga', 'impressora', 'scanner', 'webcam', 'microfone', 'fone', 'caixa',
+            'laptop', 'notebook', 'tablet', 'celular', 'smartphone', 'bateria', 'pilha', 'chip', 'processador', 'intel',
+            'amd', 'servidor', 'modem', 'roteador', 'switch', 'hub', 'fibra', 'óptica', 'wi-fi', 'bluetooth',
+            
+            // SOFTWARE E SISTEMAS (50 palavras)
+            'windows', 'linux', 'android', 'ios', 'macos', 'word', 'excel', 'powerpoint', 'access', 'outlook',
+            'navegador', 'chrome', 'firefox', 'edge', 'opera', 'antivirus', 'firewall', 'driver', 'sistema', 'programa',
+            'aplicativo', 'app', 'jogo', 'game', 'editor', 'texto', 'planilha', 'slide', 'banco', 'dados',
+            'nuvem', 'cloud', 'drive', 'email', 'spam', 'lixeira', 'pasta', 'arquivo', 'documento', 'foto',
+            'imagem', 'vídeo', 'áudio', 'música', 'filme', 'pdf', 'zip', 'rar', 'backup', 'download',
+
+            // AÇÕES E TERMOS GERAIS (50 palavras)
+            'digitar', 'clicar', 'arrastar', 'soltar', 'copiar', 'colar', 'recortar', 'salvar', 'abrir', 'fechar',
+            'imprimir', 'formatar', 'editar', 'excluir', 'deletar', 'inserir', 'buscar', 'pesquisar', 'enviar', 'receber',
+            'login', 'senha', 'usuário', 'admin', 'suporte', 'técnico', 'erro', 'bug', 'vírus', 'hacker',
+            'internet', 'online', 'offline', 'link', 'site', 'blog', 'rede', 'social', 'chat', 'mensagem',
+            'facebook', 'instagram', 'whatsapp', 'youtube', 'google', 'tecnologia', 'digital', 'virtual', 'robótica', 'logica',
+
+            // PALAVRAS COM ACENTUAÇÃO E SÍMBOLOS (50 palavras - Para treino avançado)
+            'informática', 'computação', 'lógica', 'código', 'usuário', 'domínio', 'vídeo', 'áudio', 'página', 'número',
+            'você', 'até', 'não', 'são', 'então', 'ação', 'conexão', 'configuração', 'instalação', 'atualização',
+            'proteção', 'vírus', 'saída', 'entrada', 'início', 'será', 'está', 'área', 'ícone', 'botão',
+            'rodapé', 'cabeçalho', 'parágrafo', 'título', 'seção', 'opção', 'função', 'fórmula', 'célula', 'referência',
+            'gráfico', 'análise', 'conclusão', 'relatório', 'apresentação', 'multimídia', 'periférico', 'terabyte', 'gigabyte', 'megabyte'
+        ];
+
+        // Elementos da Tela
+        const telaInicial = document.getElementById('tela-inicial');
+        const telaJogo = document.getElementById('tela-jogo');
+        const telaFim = document.getElementById('tela-fim');
+        const elPalavra = document.getElementById('palavra');
+        const inputTexto = document.getElementById('input-texto');
+        const elPontos = document.getElementById('pontos');
+        const elPontosFinais = document.getElementById('pontos-finais');
+        const elRelogio = document.getElementById('relogio');
+        
+        // Elementos de Identificação
+        const inputNome = document.getElementById('nome-aluna');
+        const inputUnidade = document.getElementById('unidade-aluna');
+        const listaRankingHTML = document.getElementById('lista-ranking');
+
+        // Variáveis de Controle
+        let tempo = TEMPO_INICIAL;
+        let pontos = 0;
+        let intervalo;
+        let nomeAtual = "";
+        let unidadeAtual = "";
+
+        // --- FUNÇÕES DE RANKING ---
+        function carregarRanking() {
+            const rankingSalvo = localStorage.getItem('ranking_digitacao_prof_bruno_v2');
+            listaRankingHTML.innerHTML = ""; // Limpa a lista visual
+
+            if (rankingSalvo) {
+                const ranking = JSON.parse(rankingSalvo);
+                
+                // Ordena do maior para o menor
+                ranking.sort((a, b) => b.pontos - a.pontos);
+                
+                // --- MUDANÇA AQUI: PEGA APENAS OS 3 PRIMEIROS ---
+                const top3 = ranking.slice(0, 3);
+
+                if(top3.length === 0) {
+                    listaRankingHTML.innerHTML = "<li style='text-align:center'>Sem recordes ainda. Seja a primeira!</li>";
+                } else {
+                    top3.forEach((item, index) => {
+                        let medalha = "";
+                        if(index === 0) medalha = "🥇 ";
+                        else if(index === 1) medalha = "🥈 ";
+                        else if(index === 2) medalha = "🥉 ";
+                        
+                        listaRankingHTML.innerHTML += `
+                            <li>
+                                <span>${medalha}${item.nome} <span class="info-aluna">(${item.unidade})</span></span>
+                                <span class="destaque-pontos">${item.pontos} pts</span>
+                            </li>
+                        `;
+                    });
+                }
+            } else {
+                listaRankingHTML.innerHTML = "<li style='text-align:center'>Sem recordes ainda. Seja a primeira!</li>";
+            }
+        }
+
+        function salvarPontuacao(pontosFinais) {
+            let ranking = JSON.parse(localStorage.getItem('ranking_digitacao_prof_bruno_v2') || "[]");
+            
+            ranking.push({
+                nome: nomeAtual,
+                unidade: unidadeAtual,
+                pontos: pontosFinais,
+                data: new Date().toLocaleDateString()
+            });
+
+            localStorage.setItem('ranking_digitacao_prof_bruno_v2', JSON.stringify(ranking));
+        }
+
+        // --- LÓGICA DO JOGO ---
+
+        function verificarDados() {
+            nomeAtual = inputNome.value.trim();
+            unidadeAtual = inputUnidade.value.trim();
+
+            if (nomeAtual === "" || unidadeAtual === "") {
+                alert("Por favor, preencha seu NOME e a UNIDADE (Bairro) antes de começar!");
+                return;
+            }
+            // Transforma o nome em Maiúsculo para ficar bonito no ranking
+            nomeAtual = nomeAtual.toUpperCase();
+            unidadeAtual = unidadeAtual.toUpperCase();
+            
+            iniciarJogo();
+        }
+
+        function iniciarJogo() {
+            telaInicial.classList.add('escondido');
+            telaJogo.classList.remove('escondido');
+            inputTexto.value = '';
+            inputTexto.focus();
+            novaPalavra();
+            intervalo = setInterval(contarTempo, 1000);
+        }
+
+        function novaPalavra() {
+            const sorteada = listaPalavras[Math.floor(Math.random() * listaPalavras.length)];
+            elPalavra.innerText = sorteada;
+            inputTexto.classList.remove('acertou');
+        }
+
+        function contarTempo() {
+            tempo--;
+            let min = Math.floor(tempo / 60);
+            let sec = tempo % 60;
+            if (sec < 10) sec = "0" + sec;
+            elRelogio.innerText = min + ":" + sec;
+
+            if (tempo <= 0) fimDeJogo();
+        }
+
+        function fimDeJogo() {
+            clearInterval(intervalo);
+            telaJogo.classList.add('escondido');
+            telaFim.classList.remove('escondido');
+            elPontosFinais.innerText = pontos;
+            
+            salvarPontuacao(pontos);
+        }
+
+        inputTexto.addEventListener('input', function() {
+            const digitado = inputTexto.value.trim().toLowerCase();
+            const palavraCerta = elPalavra.innerText.toLowerCase();
+
+            if (digitado === palavraCerta) {
+                pontos++;
+                elPontos.innerText = pontos;
+                inputTexto.classList.add('acertou');
+                inputTexto.value = '';
+                
+                // Delay pequeno para dar sensação de acerto visual
+                setTimeout(novaPalavra, 100);
+            }
+        });
+
+        // Carrega o ranking ao abrir a página
+        window.onload = carregarRanking;
+
+    </script>
+</body>
+</html>
