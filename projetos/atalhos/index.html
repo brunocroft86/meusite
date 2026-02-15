@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Jogo da Memória de Atalhos | Prof. Bruno Galvão</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="shortcut icon" href="img/logofv.png" type="image/x-icon">
+</head>
+<body>
+
+    <div class="main-layout">
+
+        <aside class="side-container left">
+            <div class="logo-wrapper">
+                <div class="logo-container">
+                    <img src="img/logoleao.jpeg" alt="Logo Prof. Bruno" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+                    <div class="logo-placeholder" style="display:none;">Sua<br>Logo</div>
+                </div>
+            </div>
+        </aside>
+
+        <main class="center-content">
+            
+            <header>
+                <h1>Treinamento de <span>Atalhos</span></h1>
+                <p>Prof. Bruno Galvão</p>
+            </header>
+
+            <div class="game-wrapper">
+                <div class="stats" id="stats-panel">
+                    <span>Erros: <span id="mistakes" style="color: var(--bg-primary-red);">0</span></span>
+                    <span>Pares: <span id="matches" style="color: var(--success-green);">0</span> / 8</span>
+                </div>
+                <section class="memory-game" id="game-board"></section>
+            </div>
+
+        </main>
+
+        <aside class="side-container right">
+            </aside>
+
+    </div>
+
+    <div id="end-screen">
+        <h2>🎉 Parabéns! 🎉</h2>
+        <p style="font-size: 2.5vh; margin-bottom: 1vh; font-weight: bold;">Vocês dominaram os atalhos.</p>
+        <p id="final-mistakes" style="font-size: 2vh; color: #64748b;"></p>
+        <button class="btn-restart" onclick="initGame()">Jogar Nova Rodada</button>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>

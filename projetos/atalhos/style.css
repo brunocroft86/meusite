@@ -1,0 +1,183 @@
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;700;900&display=swap');
+
+:root {
+    --bg-dark-red: #7f1d1d;
+    --bg-primary-red: #dc2626;
+    --bg-light-red: #fca5a5;
+    --pure-white: #ffffff;
+    --text-dark: #1e293b;
+    --success-green: #10b981;
+}
+
+* {
+    margin: 0; padding: 0; box-sizing: border-box; font-family: 'Poppins', sans-serif; user-select: none; 
+}
+
+body {
+    background: linear-gradient(-45deg, #7f1d1d, #991b1b, #dc2626, #450a0a);
+    background-size: 400% 400%;
+    animation: gradientBG 15s ease infinite;
+    color: var(--pure-white);
+    height: 100vh; width: 100vw; overflow: hidden; 
+    /* Removemos o padding do body para usar o layout total */
+}
+
+@keyframes gradientBG {
+    0% { background-position: 0% 50%; } 50% { background-position: 100% 50%; } 100% { background-position: 0% 50%; }
+}
+
+/* =========================================
+   ESTRUTURA DE LAYOUT PRINCIPAL (O Segredo)
+   ========================================= */
+
+/* O container que segura as 3 colunas */
+.main-layout {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between; /* Espaça as laterais */
+    align-items: center; /* Centraliza verticalmente */
+    width: 100%;
+    height: 100%;
+    padding: 2vh 4vw; /* Um pouco de respiro nas bordas da tela */
+}
+
+/* As colunas laterais (Logo e Espaçador) */
+.side-container {
+    /* Define uma largura fixa para as laterais para garantir o centro perfeito */
+    flex: 0 0 30vh; 
+    display: flex;
+    justify-content: center; /* Centraliza a logo dentro do espaço dela */
+}
+
+/* O conteúdo central */
+.center-content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    flex-grow: 1; /* Ocupa todo o espaço que sobrar no meio */
+    max-width: 70vh; /* Limita a largura para não ficar muito esticado */
+}
+
+/* --- CABEÇALHO (Agora dentro do centro) --- */
+header {
+    text-align: center;
+    margin-bottom: 3vh;
+}
+
+header h1 {
+    font-size: 4.5vh; /* Um pouco maior para destaque */
+    text-transform: uppercase; letter-spacing: 1px; color: var(--pure-white);
+    text-shadow: 3px 3px 6px rgba(0,0,0,0.4); line-height: 1.1; margin-bottom: 0.5vh;
+}
+header p { font-size: 2.2vh; color: var(--bg-light-red); font-weight: 700; letter-spacing: 0.5px; }
+
+
+/* --- LOGO LATERAL --- */
+/* Wrapper para ajudar no posicionamento se precisar */
+.logo-wrapper { display: flex; justify-content: flex-start; width: 100%; }
+
+.logo-container {
+    width: 28vh; height: 28vh; /* Mantivemos grande */
+    background-color: var(--pure-white); border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    border: 6px solid var(--pure-white);
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.6);
+    position: relative; overflow: hidden;   
+    animation: professionalFloat 6s ease-in-out infinite;
+}
+
+.logo-container img { width: 100%; height: 100%; object-fit: cover; backface-visibility: hidden; }
+
+/* Efeito de brilho (Mantido) */
+.logo-container::after {
+    content: ''; position: absolute; top: -50%; left: -150%; width: 200%; height: 200%;
+    background: linear-gradient(to right, rgba(255, 255, 255, 0) 0%, rgba(255, 255, 255, 0.8) 50%, rgba(255, 255, 255, 0) 100%);
+    transform: rotate(30deg); animation: gleamPass 3s cubic-bezier(0.4, 0.0, 0.2, 1) infinite; animation-delay: 1s;
+}
+.logo-placeholder { color: var(--bg-primary-red); font-weight: 900; font-size: 2vh; text-align: center; line-height: 1.2; }
+
+@keyframes professionalFloat { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-15px); box-shadow: 0 35px 60px rgba(0, 0, 0, 0.5); } }
+@keyframes gleamPass { 0% { left: -150%; } 30% { left: 150%; } 100% { left: 150%; } }
+
+
+/* --- ÁREA DO JOGO CENTRALIZADA --- */
+.game-wrapper {
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
+    width: 100%; /* Ocupa a largura do container central */
+}
+
+.stats {
+    display: flex; justify-content: space-between; width: 100%;
+    margin-bottom: 2vh; font-size: 2.2vh; font-weight: 700;
+    background: var(--pure-white); color: var(--text-dark);
+    padding: 1.5vh 3vh; border-radius: 15px; box-shadow: 0 5px 15px rgba(0,0,0,0.5);
+}
+
+.memory-game {
+    display: grid; grid-template-columns: repeat(4, 1fr); grid-template-rows: repeat(4, 1fr);
+    gap: 1.5vmin; width: 100%; aspect-ratio: 1 / 1;
+}
+
+/* --- (O RESTANTE DO CSS DAS CARTAS PERMANECE IGUAL) --- */
+.memory-card {
+    width: 100%; height: 100%; position: relative; cursor: pointer;
+    transition: transform 0.15s ease-in-out; opacity: 1; transform: scale(1); animation: popIn 0.5s ease-out;
+}
+@keyframes popIn { from { opacity: 0; transform: scale(0.1); } to { opacity: 1; transform: scale(1); } }
+
+.memory-card.is-shrinking { transform: scaleX(0) !important; }
+.memory-card:hover:not(.flip):not(.is-shrinking) { transform: scale(1.03) translateY(-2px); }
+.memory-card:active { transform: scale(0.95); }
+
+.front-face, .back-face {
+    width: 100%; height: 100%; position: absolute; border-radius: 1.5vh;
+    display: flex; align-items: center; justify-content: center; text-align: center;
+    padding: 1vmin; box-shadow: 0 4px 10px rgba(0,0,0,0.4); transition: opacity 0.1s ease;
+}
+
+.memory-card:not(.flip) .front-face { opacity: 0; pointer-events: none; }
+.memory-card:not(.flip) .back-face { opacity: 1; pointer-events: auto; }
+.memory-card.flip .front-face { opacity: 1; pointer-events: auto; }
+.memory-card.flip .back-face { opacity: 0; pointer-events: none; }
+
+.back-face {
+    background: var(--bg-primary-red); color: var(--pure-white); font-size: 5vmin; font-weight: 900;
+    border: 3px solid var(--pure-white);
+    background-image: repeating-linear-gradient(45deg, transparent, transparent 10px, rgba(255,255,255,0.1) 10px, rgba(255,255,255,0.1) 20px);
+}
+.front-face { background: var(--pure-white); border: 3px solid var(--bg-primary-red); }
+.front-face.type-action { color: var(--text-dark); font-size: clamp(1rem, 2.5vmin, 1.8rem); font-weight: 700; }
+.front-face.type-key { color: var(--bg-primary-red); font-size: clamp(1.2rem, 3vmin, 2.2rem); font-weight: 900; }
+
+.memory-card.shake { animation: shakeError 0.4s ease-in-out; }
+@keyframes shakeError { 0%, 100% { transform: translateX(0); } 20%, 60% { transform: translateX(-8px); } 40%, 80% { transform: translateX(8px); } }
+.memory-card.matched { animation: pulseSuccess 0.5s ease-out forwards; }
+@keyframes pulseSuccess {
+    0% { transform: scale(1); } 50% { transform: scale(1.08); box-shadow: 0 0 20px var(--success-green); border-color: var(--success-green); }
+    100% { transform: scale(1); opacity: 0.85; box-shadow: 0 0 5px var(--success-green); border-color: var(--success-green); }
+}
+
+#end-screen {
+    display: none; position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
+    text-align: center; background: var(--pure-white); padding: 5vh; border-radius: 3vh;
+    box-shadow: 0 20px 50px rgba(0,0,0,0.8); z-index: 100; width: 90%; max-width: 500px; color: var(--text-dark);
+}
+#end-screen h2 { font-size: 4.5vh; color: var(--bg-primary-red); margin-bottom: 2vh; }
+.btn-restart {
+    padding: 2vh 4vh; font-size: 2.5vh; background: var(--bg-primary-red); color: var(--pure-white);
+    border: none; border-radius: 1.5vh; cursor: pointer; font-weight: 900; transition: all 0.3s ease;
+    margin-top: 3vh; box-shadow: 0 5px 15px rgba(220, 38, 38, 0.4);
+}
+.btn-restart:hover { transform: translateY(-3px) scale(1.05); background: #7f1d1d; }
+
+/* --- RESPONSIVIDADE --- */
+/* No celular, a gente desfaz o layout de 3 colunas e empilha tudo de novo */
+@media (max-width: 1024px) or (max-aspect-ratio: 1/1) {
+    .main-layout { flex-direction: column; padding: 2vh; justify-content: flex-start; }
+    .side-container { flex: 0 0 auto; width: 100%; margin-bottom: 2vh; }
+    .side-container.right { display: none; /* Esconde o espaçador no celular */ }
+    .logo-container { width: 20vh; height: 20vh; }
+    .center-content { width: 100%; max-width: 55vh; }
+    header { margin-bottom: 2vh; }
+}
