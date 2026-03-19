@@ -3,52 +3,640 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Jogo da Memória de Atalhos | Prof. Bruno Galvão</title>
-    <link rel="stylesheet" href="style.css">
+    <title>Treinamento de Atalhos do Word | Prof. Bruno Galvão</title>
     <link rel="shortcut icon" href="img/logofv.png" type="image/x-icon">
+    
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700;900&family=Inter:wght@600;800;900&display=swap');
+
+        :root {
+            --neon-blue: #00f3ff;
+            --neon-purple: #bc13fe;
+            --neon-red: #ff003c;
+            --neon-green: #00ff66;
+            --dark-bg: #030a16;
+            --panel-bg: rgba(3, 15, 35, 0.85);
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Inter', sans-serif;
+            user-select: none;
+        }
+
+        body {
+            background-color: var(--dark-bg);
+            background-image: 
+                linear-gradient(rgba(0, 243, 255, 0.05) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(0, 243, 255, 0.05) 1px, transparent 1px);
+            background-size: 30px 30px;
+            color: #fff;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh; 
+            width: 100vw;
+            overflow: hidden; 
+            position: relative;
+        }
+
+        /* --- ANIMAÇÃO REALISTA DE BATIMENTO CARDÍACO (ECG) --- */
+        .ecg-container {
+            position: absolute;
+            top: 0; left: 0; width: 100vw; height: 100vh;
+            overflow: hidden;
+            z-index: 0; 
+            pointer-events: none; 
+            -webkit-mask-image: linear-gradient(to right, transparent 0%, black 10%, black 90%, transparent 100%);
+            mask-image: linear-gradient(to right, transparent 0%, black 10%, black 90%, transparent 100%);
+        }
+
+        .ecg-monitor {
+            position: absolute;
+            width: 100vw;
+            height: 25vh;
+            left: 0;
+        }
+
+        .ecg-top { top: 5%; }
+        .ecg-bottom { bottom: 5%; }
+
+        .ecg-track {
+            fill: none;
+            stroke-width: 2;
+        }
+        .track-blue { stroke: rgba(0, 243, 255, 0.1); }
+        .track-purple { stroke: rgba(188, 19, 254, 0.1); }
+
+        .ecg-pulse {
+            fill: none;
+            stroke-width: 4;
+            stroke-linecap: round;
+            stroke-linejoin: round;
+        }
+
+        .pulse-blue {
+            stroke: var(--neon-blue);
+            filter: drop-shadow(0 0 8px var(--neon-blue));
+            stroke-dasharray: 250 1750;
+            animation: ecg-draw 4s linear infinite;
+        }
+
+        .pulse-purple {
+            stroke: var(--neon-purple);
+            filter: drop-shadow(0 0 8px var(--neon-purple));
+            stroke-dasharray: 300 1700;
+            animation: ecg-draw 5.5s linear infinite; 
+        }
+
+        @keyframes ecg-draw {
+            from { stroke-dashoffset: 2000; }
+            to { stroke-dashoffset: 0; }
+        }
+
+        .main-layout {
+            display: flex;
+            width: 100%;
+            height: 100%;
+            max-width: 1400px;
+            padding: 2vh 2vw;
+            align-items: center;
+            position: relative;
+            z-index: 2; 
+        }
+
+        .main-layout::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 60vw;
+            height: 60vh;
+            background: radial-gradient(circle, rgba(188, 19, 254, 0.15) 0%, rgba(0, 243, 255, 0.05) 40%, transparent 70%);
+            z-index: -1;
+            pointer-events: none;
+        }
+
+        .side-container {
+            width: 20%;
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            height: 100%;
+            padding-top: 3vh;
+        }
+
+        .center-content {
+            width: 60%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100%;
+        }
+
+        .logo-container img {
+            max-height: 15vh;
+            border-radius: 50%;
+            border: 2px solid var(--neon-blue);
+            box-shadow: 0 0 15px var(--neon-blue), inset 0 0 10px var(--neon-blue);
+            animation: pulse-glow 3s infinite alternate;
+        }
+
+        @keyframes pulse-glow {
+            0% { box-shadow: 0 0 10px var(--neon-blue), 0 0 20px rgba(0,243,255,0.2); }
+            100% { box-shadow: 0 0 20px var(--neon-blue), 0 0 40px rgba(0,243,255,0.6); }
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 2vh;
+            text-transform: uppercase;
+            font-family: 'Orbitron', sans-serif;
+        }
+
+        header h1 {
+            font-size: 3.5vh;
+            line-height: 1.2;
+            color: #fff;
+            text-shadow: 0 0 10px var(--neon-blue), 0 0 20px var(--neon-blue);
+            font-family: 'Orbitron', sans-serif;
+        }
+
+        header p {
+            font-size: 2.2vh;
+            color: var(--neon-blue);
+            letter-spacing: 2px;
+            margin-top: 0.5vh;
+            font-family: 'Orbitron', sans-serif;
+        }
+
+        .game-wrapper {
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .btn-start {
+            padding: 1.2vh 3vh;
+            font-size: 2.2vh;
+            font-weight: 700;
+            font-family: 'Orbitron', sans-serif;
+            background: rgba(0, 255, 102, 0.1);
+            color: var(--neon-green);
+            border: 2px solid var(--neon-green);
+            border-radius: 5px;
+            cursor: pointer;
+            margin-bottom: 2vh;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            transition: all 0.3s ease;
+            box-shadow: 0 0 10px rgba(0, 255, 102, 0.3), inset 0 0 10px rgba(0, 255, 102, 0.2);
+        }
+
+        .btn-start:hover {
+            background: var(--neon-green);
+            color: #000;
+            box-shadow: 0 0 20px var(--neon-green);
+        }
+
+        .stats {
+            display: flex;
+            justify-content: space-between;
+            width: 100%;
+            max-width: 70vh;
+            font-size: 2.5vh;
+            font-weight: 700;
+            margin-bottom: 2vh;
+            background: var(--panel-bg);
+            padding: 1.5vh 2.5vh;
+            border-radius: 5px;
+            border: 1px solid rgba(0, 243, 255, 0.3);
+            box-shadow: inset 0 0 10px rgba(0, 243, 255, 0.1);
+            font-family: 'Orbitron', sans-serif;
+        }
+
+        .stat-mistakes { color: var(--neon-red); text-shadow: 0 0 8px var(--neon-red); }
+        .stat-matches { color: var(--neon-green); text-shadow: 0 0 8px var(--neon-green); }
+
+        .memory-game {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            grid-template-rows: repeat(4, 1fr);
+            gap: 1.5vh;
+            perspective: 1200px;
+            width: 100%;
+            max-width: 70vh;
+            aspect-ratio: 1 / 1;
+        }
+
+        .card {
+            width: 100%;
+            height: 100%;
+            position: relative;
+            transform-style: preserve-3d;
+            transition: transform 0.6s cubic-bezier(0.4, 0.2, 0.2, 1);
+            cursor: pointer;
+        }
+
+        .card.flip { transform: rotateY(180deg); }
+
+        .card.matched .card-front {
+            border-color: var(--neon-green);
+            box-shadow: 0 0 15px var(--neon-green), inset 0 0 15px rgba(0, 255, 102, 0.3);
+            background: rgba(0, 255, 102, 0.15);
+        }
+
+        .card-front, .card-back {
+            width: 100%;
+            height: 100%;
+            position: absolute;
+            backface-visibility: hidden;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            border-radius: 8px;
+            padding: 1vh;
+            flex-direction: column;
+            transition: all 0.3s ease;
+        }
+
+        .card-back {
+            background: var(--panel-bg);
+            border: 2px solid rgba(0, 243, 255, 0.3);
+            font-size: 5vh;
+            box-shadow: inset 0 0 15px rgba(0,0,0,0.8);
+        }
+
+        .card:hover .card-back {
+            border-color: var(--neon-blue);
+            box-shadow: 0 0 10px var(--neon-blue), inset 0 0 10px rgba(0, 243, 255, 0.2);
+        }
+
+        .card-front {
+            background: linear-gradient(135deg, #02060d, #06152b);
+            border: 2px solid var(--neon-blue);
+            color: #fff;
+            transform: rotateY(180deg);
+            box-shadow: 0 0 8px rgba(0, 243, 255, 0.4);
+        }
+
+        .shortcut-text {
+            font-family: 'Inter', sans-serif;
+            font-size: 3vh;
+            font-weight: 900;
+            color: var(--neon-blue);
+            margin-bottom: 0.8vh;
+            text-shadow: none;
+        }
+
+        .action-text {
+            font-family: 'Inter', sans-serif;
+            font-size: 2.2vh; 
+            font-weight: 700;
+            color: #ffffff;
+            line-height: 1.1;
+            text-shadow: none;
+        }
+
+        #end-screen {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background: rgba(3, 10, 22, 0.95);
+            backdrop-filter: blur(5px);
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 100;
+            text-align: center;
+        }
+
+        #end-screen h2 {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 7vh;
+            color: var(--neon-green);
+            text-shadow: 0 0 20px var(--neon-green);
+            margin-bottom: 2vh;
+            text-transform: uppercase;
+            animation: pulse-glow 2s infinite alternate;
+        }
+
+        #end-screen p { font-size: 3vh; color: #fff; margin-bottom: 1vh; }
+
+        .btn-restart {
+            padding: 1.5vh 4vh;
+            font-size: 2.5vh;
+            font-family: 'Orbitron', sans-serif;
+            font-weight: bold;
+            background: transparent;
+            color: var(--neon-blue);
+            border: 2px solid var(--neon-blue);
+            border-radius: 5px;
+            cursor: pointer;
+            margin-top: 4vh;
+            transition: all 0.3s;
+            text-transform: uppercase;
+        }
+
+        .btn-restart:hover {
+            background: var(--neon-blue);
+            color: #000;
+            box-shadow: 0 0 30px var(--neon-blue);
+        }
+
+        @media (max-aspect-ratio: 1/1) {
+            .main-layout { flex-direction: column; justify-content: flex-start; padding: 2vh 4vw; }
+            .side-container { width: 100%; height: auto; padding: 1vh 0; order: -1; }
+            .center-content { width: 100%; justify-content: flex-start; }
+            .logo-container img { max-height: 10vh; }
+            .memory-game { max-width: 95vw; gap: 2vw; }
+            .stats { max-width: 95vw; font-size: 2.5vh;}
+            header h1 { font-size: 3vh; }
+            .shortcut-text { font-size: 2.8vh; }
+            .action-text { font-size: 2vh; }
+        }
+    </style>
 </head>
 <body>
 
-    <div class="main-layout">
+    <div class="ecg-container">
+        <svg class="ecg-monitor ecg-top" viewBox="0 0 1000 100" preserveAspectRatio="none">
+            <path id="path-blue" class="ecg-track track-blue" d="M 0 50 L 150 50 L 160 40 L 170 50 L 180 50 L 185 60 L 195 10 L 205 90 L 215 50 L 230 50 L 245 35 L 260 50 L 650 50 L 660 40 L 670 50 L 680 50 L 685 60 L 695 10 L 705 90 L 715 50 L 730 50 L 745 35 L 760 50 L 1000 50" />
+            <path class="ecg-pulse pulse-blue" d="M 0 50 L 150 50 L 160 40 L 170 50 L 180 50 L 185 60 L 195 10 L 205 90 L 215 50 L 230 50 L 245 35 L 260 50 L 650 50 L 660 40 L 670 50 L 680 50 L 685 60 L 695 10 L 705 90 L 715 50 L 730 50 L 745 35 L 760 50 L 1000 50" />
+        </svg>
 
+        <svg class="ecg-monitor ecg-bottom" viewBox="0 0 1000 100" preserveAspectRatio="none">
+            <path id="path-purple" class="ecg-track track-purple" d="M 0 50 L 350 50 L 360 40 L 370 50 L 380 50 L 385 60 L 395 10 L 405 90 L 415 50 L 430 50 L 445 35 L 460 50 L 850 50 L 860 40 L 870 50 L 880 50 L 885 60 L 895 10 L 905 90 L 915 50 L 930 50 L 945 35 L 960 50 L 1000 50" />
+            <path class="ecg-pulse pulse-purple" d="M 0 50 L 350 50 L 360 40 L 370 50 L 380 50 L 385 60 L 395 10 L 405 90 L 415 50 L 430 50 L 445 35 L 460 50 L 850 50 L 860 40 L 870 50 L 880 50 L 885 60 L 895 10 L 905 90 L 915 50 L 930 50 L 945 35 L 960 50 L 1000 50" />
+        </svg>
+    </div>
+
+    <div class="main-layout">
         <aside class="side-container left">
             <div class="logo-wrapper">
                 <div class="logo-container">
-                    <img src="img/logoleao.jpeg" alt="Logo Prof. Bruno" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
-                    <div class="logo-placeholder" style="display:none;">Sua<br>Logo</div>
+                    <img src="img/logoleao.jpeg" alt="Logo Prof. Bruno" onerror="this.style.display='none';">
                 </div>
             </div>
         </aside>
 
         <main class="center-content">
-            
             <header>
-                <h1>Treinamento de <span>Atalhos</span></h1>
+                <h1>Treinamento de <span style="color: var(--neon-blue); text-shadow: 0 0 10px var(--neon-blue);">Atalhos do Word</span></h1>
                 <p>Prof. Bruno Galvão</p>
             </header>
 
             <div class="game-wrapper">
+                <button id="start-btn" class="btn-start">Iniciar Sequência</button>
+
                 <div class="stats" id="stats-panel">
-                    <span>Erros: <span id="mistakes" style="color: var(--bg-primary-red);">0</span></span>
-                    <span>Pares: <span id="matches" style="color: var(--success-green);">0</span> / 8</span>
+                    <span>Erros: <span id="mistakes" class="stat-mistakes">0</span></span>
+                    <span>Pares: <span id="matches" class="stat-matches">0</span> / 8</span>
                 </div>
                 <section class="memory-game" id="game-board"></section>
             </div>
-
         </main>
 
-        <aside class="side-container right">
-            </aside>
-
+        <aside class="side-container right"></aside>
     </div>
 
     <div id="end-screen">
-        <h2>🎉 Parabéns! 🎉</h2>
-        <p style="font-size: 2.5vh; margin-bottom: 1vh; font-weight: bold;">Vocês dominaram os atalhos.</p>
-        <p id="final-mistakes" style="font-size: 2vh; color: #64748b;"></p>
-        <button class="btn-restart" onclick="initGame()">Jogar Nova Rodada</button>
+        <h2>SISTEMA HACKEADO!</h2>
+        <p style="font-weight: bold;">Você dominou os atalhos com maestria.</p>
+        <p id="final-mistakes" style="color: var(--neon-blue);"></p>
+        <button class="btn-restart" onclick="initGame()">Jogar Novamente</button>
     </div>
 
-    <script src="script.js"></script>
+    <script>
+        // --- SISTEMA DE ÁUDIO SINTETIZADO AJUSTADO PARA SER AUDÍVEL ---
+        let audioCtx;
+        let isHeartbeating = false;
+
+        function startCyberHeartbeat() {
+            if (!audioCtx) {
+                audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+            }
+            if (audioCtx.state === 'suspended') {
+                audioCtx.resume();
+            }
+            isHeartbeating = true;
+            playBeat();
+        }
+
+        function playBeat() {
+            if (!isHeartbeating) return;
+            
+            const time = audioCtx.currentTime;
+            
+            // PRIMEIRO BATIMENTO ("TUM")
+            const osc1 = audioCtx.createOscillator();
+            const gain1 = audioCtx.createGain();
+            osc1.connect(gain1);
+            gain1.connect(audioCtx.destination);
+            
+            // Alterado para "triangle" e frequência mais alta (audível em celulares e notebooks)
+            osc1.type = 'triangle'; 
+            osc1.frequency.setValueAtTime(180, time); 
+            osc1.frequency.exponentialRampToValueAtTime(40, time + 0.3);
+            
+            gain1.gain.setValueAtTime(0.8, time); 
+            gain1.gain.exponentialRampToValueAtTime(0.01, time + 0.3);
+            
+            osc1.start(time);
+            osc1.stop(time + 0.3);
+            
+            // SEGUNDO BATIMENTO ("tum")
+            const osc2 = audioCtx.createOscillator();
+            const gain2 = audioCtx.createGain();
+            osc2.connect(gain2);
+            gain2.connect(audioCtx.destination);
+            
+            osc2.type = 'triangle';
+            osc2.frequency.setValueAtTime(150, time + 0.25); 
+            osc2.frequency.exponentialRampToValueAtTime(40, time + 0.5);
+            
+            gain2.gain.setValueAtTime(0.5, time + 0.25);
+            gain2.gain.exponentialRampToValueAtTime(0.01, time + 0.5);
+            
+            osc2.start(time + 0.25);
+            osc2.stop(time + 0.5);
+
+            setTimeout(playBeat, 1000);
+        }
+
+        function stopCyberHeartbeat() {
+            isHeartbeating = false;
+        }
+        // -------------------------------------------------------------
+
+        const allWordShortcuts = [
+            { id: 'negrito', content: '<div class="shortcut-text">Ctrl + N</div><div class="action-text">Negrito</div>' },
+            { id: 'italico', content: '<div class="shortcut-text">Ctrl + I</div><div class="action-text">Itálico</div>' },
+            { id: 'sublinhado', content: '<div class="shortcut-text">Ctrl + S</div><div class="action-text">Sublinhado</div>' },
+            { id: 'centralizar', content: '<div class="shortcut-text">Ctrl + E</div><div class="action-text">Centralizar</div>' },
+            { id: 'justificar', content: '<div class="shortcut-text">Ctrl + J</div><div class="action-text">Justificar</div>' },
+            { id: 'alinhar-esq', content: '<div class="shortcut-text">Ctrl + Q</div><div class="action-text">Alinhar à Esquerda</div>' },
+            { id: 'alinhar-dir', content: '<div class="shortcut-text">Ctrl + G</div><div class="action-text">Alinhar à Direita</div>' },
+            { id: 'salvar', content: '<div class="shortcut-text">Ctrl + B</div><div class="action-text">Salvar</div>' },
+            { id: 'imprimir', content: '<div class="shortcut-text">Ctrl + P</div><div class="action-text">Imprimir</div>' },
+            { id: 'selecionar-tudo', content: '<div class="shortcut-text">Ctrl + T</div><div class="action-text">Selecionar Tudo</div>' },
+            { id: 'localizar', content: '<div class="shortcut-text">Ctrl + L</div><div class="action-text">Localizar</div>' },
+            { id: 'substituir', content: '<div class="shortcut-text">Ctrl + U</div><div class="action-text">Substituir</div>' },
+            { id: 'copiar', content: '<div class="shortcut-text">Ctrl + C</div><div class="action-text">Copiar</div>' },
+            { id: 'colar', content: '<div class="shortcut-text">Ctrl + V</div><div class="action-text">Colar</div>' },
+            { id: 'recortar', content: '<div class="shortcut-text">Ctrl + X</div><div class="action-text">Recortar</div>' },
+            { id: 'desfazer', content: '<div class="shortcut-text">Ctrl + Z</div><div class="action-text">Desfazer</div>' }
+        ];
+
+        const gameBoard = document.getElementById('game-board');
+        const mistakesElement = document.getElementById('mistakes');
+        const matchesElement = document.getElementById('matches');
+        const endScreen = document.getElementById('end-screen');
+        const finalMistakes = document.getElementById('final-mistakes');
+        const startBtn = document.getElementById('start-btn');
+
+        let firstCard = null;
+        let secondCard = null;
+        let hasFlippedCard = false;
+        let lockBoard = true; 
+        let gameStarted = false; 
+        let mistakes = 0;
+        let matches = 0;
+
+        function initGame() {
+            gameBoard.innerHTML = '';
+            mistakes = 0;
+            matches = 0;
+            mistakesElement.innerText = mistakes;
+            matchesElement.innerText = matches;
+            endScreen.style.display = 'none';
+            
+            stopCyberHeartbeat();
+
+            gameStarted = false;
+            lockBoard = true; 
+            startBtn.style.display = 'inline-block';
+
+            let shuffledShortcuts = [...allWordShortcuts].sort(() => 0.5 - Math.random());
+            let roundPairs = shuffledShortcuts.slice(0, 8);
+
+            let cardsArray = [];
+            roundPairs.forEach(pair => {
+                cardsArray.push({ id: pair.id, html: pair.content });
+                cardsArray.push({ id: pair.id, html: pair.content });
+            });
+
+            cardsArray.sort(() => 0.5 - Math.random());
+
+            cardsArray.forEach(card => {
+                const cardElement = document.createElement('div');
+                cardElement.classList.add('card');
+                cardElement.classList.add('flip'); 
+                cardElement.dataset.id = card.id;
+
+                cardElement.innerHTML = `
+                    <div class="card-front">${card.html}</div>
+                    <div class="card-back">⌨️</div>
+                `;
+                
+                cardElement.addEventListener('click', flipCard);
+                gameBoard.appendChild(cardElement);
+            });
+        }
+
+        startBtn.addEventListener('click', startGame);
+
+        function startGame() {
+            startBtn.style.display = 'none'; 
+            
+            // INICIA O ÁUDIO AO CLICAR NO BOTÃO
+            startCyberHeartbeat();
+            
+            const allCards = document.querySelectorAll('.card');
+            allCards.forEach(card => card.classList.remove('flip')); 
+
+            setTimeout(() => {
+                lockBoard = false;
+                gameStarted = true;
+            }, 600); 
+        }
+
+        function flipCard() {
+            if (!gameStarted) return; 
+            if (lockBoard) return;
+            if (this === firstCard) return;
+
+            this.classList.add('flip');
+
+            if (!hasFlippedCard) {
+                hasFlippedCard = true;
+                firstCard = this;
+                return;
+            }
+
+            secondCard = this;
+            checkForMatch();
+        }
+
+        function checkForMatch() {
+            let isMatch = firstCard.dataset.id === secondCard.dataset.id;
+
+            if (isMatch) {
+                firstCard.classList.add('matched');
+                secondCard.classList.add('matched');
+                
+                disableCards();
+                matches++;
+                matchesElement.innerText = matches;
+                
+                if (matches === 8) {
+                    setTimeout(showEndScreen, 800);
+                }
+            } else {
+                unflipCards();
+                mistakes++;
+                mistakesElement.innerText = mistakes;
+            }
+        }
+
+        function disableCards() {
+            firstCard.removeEventListener('click', flipCard);
+            secondCard.removeEventListener('click', flipCard);
+            resetBoard();
+        }
+
+        function unflipCards() {
+            lockBoard = true;
+            setTimeout(() => {
+                firstCard.classList.remove('flip');
+                secondCard.classList.remove('flip');
+                resetBoard();
+            }, 1000);
+        }
+
+        function resetBoard() {
+            hasFlippedCard = false;
+            lockBoard = false;
+            firstCard = null;
+            secondCard = null;
+        }
+
+        function showEndScreen() {
+            endScreen.style.display = 'flex';
+            finalMistakes.innerText = `Falhas no sistema durante a invasão: ${mistakes}`;
+            
+            stopCyberHeartbeat();
+        }
+
+        document.addEventListener('DOMContentLoaded', initGame);
+    </script>
 </body>
 </html>
