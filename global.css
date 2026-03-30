@@ -1,0 +1,27 @@
+/* --- BOTÃO FLUTUANTE - VOLTAR PARA O HUB --- */
+.btn-flutuante {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    background-color: #D50000; 
+    color: white;
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-decoration: none;
+    font-size: 1.8rem;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.6);
+    transition: 0.3s;
+    z-index: 1000;
+    border: 2px solid #fff;
+    font-family: 'Roboto', sans-serif;
+}
+
+.btn-flutuante:hover {
+    transform: scale(1.1);
+    background-color: #ff1a1a;
+    box-shadow: 0 6px 20px rgba(213, 0, 0, 0.8);
+}
